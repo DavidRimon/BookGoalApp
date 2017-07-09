@@ -167,6 +167,16 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
         return 0;
     }
 
+    @Override
+    public int advanceBookGoalCur_posById(int bookGoalId) {
+        return 0;
+    }
+
+    @Override
+    public int undoAdvanceBookGoalCur_posById(int bookGoalId) {
+        return 0;
+    }
+
     /**
      * Delete BookGoal instance from database. Will find what to delete by id.
      * @param bookGoalId id of BookGoal to delete.
@@ -301,5 +311,10 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
         }
 
         return new Pair<>(0,goals);
+    }
+
+    @Override
+    public Pair<Integer, ArrayList<BookGoal>> getAllEnabledBookGoals() {
+        return null;
     }
 }
