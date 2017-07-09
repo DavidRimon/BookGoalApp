@@ -186,8 +186,9 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
                            " where "+BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.COLUMN_ID +
                            " = ? ) where " + BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.COLUMN_ID +
                            " = ?";
-            sqlStmt.bindLong(1,bookGoalId);
-            sqlStmt.bindLong(2,bookGoalId);
+        SQLiteStatement stmt = db.compileStatement(sqlStmt);
+            stmt.bindLong(1,bookGoalId);
+            stmt.bindLong(2,bookGoalId);
             if(stmt.executeUpdateDelete() == 0) //no rows affected
                     //TODO:: change string messgae...
                     return R.string.couldn_t_update_bookgoal_in_database;
