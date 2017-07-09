@@ -169,7 +169,29 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
 
     @Override
     public int advanceBookGoalCur_posById(int bookGoalId) {
-        return 0;
+        SQLiteDatabase db = this.getWritableDatabase();
+            
+        //this is the idea:
+        //update bookGoal_table 
+        //    set currentPosition = (
+        //         select sum(currentPosition+rate) from bookGoal_table where id = 3
+        //                          )
+         //             where id = 3
+            
+        String sqlStmt = "update " + BookGoalMySQLiteDBDiffinition.TABLE_BOOKGOAL_NAME +
+                          " set "  + BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.COLUMN_CUR_POS +
+                           "= select sum(" + BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.COLUMN_CUR_POS +
+                           " + "   +  BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.COLUMN_RATE +
+                           ") from "+BookGoalMySQLiteDBDiffinition.TABLE_BOOKGOAL_NAME +
+                           " where "+BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.COLUMN_ID +
+                           " = ? ) where " + BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.COLUMN_ID +
+                           " = ?";
+            sqlStmt.bindLong(1,bookGoalId);
+            sqlStmt.bindLong(2,bookGoalId);
+            if(stmt.executeUpdateDelete() == 0) //no rows affected
+                    //TODO:: change string messgae...
+                    return R.string.couldn_t_update_bookgoal_in_database;
+            return 0;
     }
 
     @Override
