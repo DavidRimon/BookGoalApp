@@ -35,11 +35,26 @@ public interface IBackend{
     public int advanceBookGoalCur_posById(int bookGoalId);
 
     /**
+     * Advance bookGoal's current position to @pos
+     * @param bookGoalId
+     * @param pos
+     * @return
+     */
+    public int advanceBookGoalToCur_posById(int pos,int bookGoalId);
+    /**
      * Go back in @cur_pos of a book goal by @rate of that bookGoal
      * @param bookGoalId id of bookGoal to change
      * @return
      */
     public int undoAdvanceBookGoalCur_posById(int bookGoalId);
+
+    /**
+     * Go back in @cur_pos to before given pos
+     * @param pos
+     * @param bookGoalId
+     * @return
+     */
+    public int undoAdvanceBookGoalToCur_posById(int pos,int bookGoalId);
     /**
      *
      * @param bookGoalId

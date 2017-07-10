@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -17,14 +18,17 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CalendarView;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES;
 import com.roomorama.caldroid.CaldroidFragment;
+import com.roomorama.caldroid.CaldroidListener;
 import com.thebluealliance.spectrum.SpectrumDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 
 import static com.example.david.bookgoalapp.R.id.fab;
@@ -35,12 +39,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
     private IBackend database;
     private ArrayList<BookGoal> bookGoals;
     /**
-     * Array list for a list of bookgoals idxs for each day in the month.
+     * Array list for a list of bookgoals idxs (in @this.bookGoals element) for each day in the month.
      * Index zero shouldn't be used! because this array is 1 indexed (like days in the month)
      */
     private ArrayList<ArrayList<Integer>> bookGoalsIdxsForThisMonth;
     private CaldroidFragment cl;
-
+    private Calendar curDate = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +67,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(getApplicationContext(),BookGoalViewActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -79,42 +82,91 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         args.putBoolean(CaldroidFragment.ENABLE_SWIPE,true);
         args.putBoolean(CaldroidFragment.SQUARE_TEXT_VIEW_CELL,true);
         cl.setArguments(args);
-        ColorDrawable cd = new ColorDrawable();
-        cd.setColor(getResources().getColor(R.color.caldroid_holo_blue_light));
-         Calendar c = Calendar.getInstance();
-        c.set(Calendar.DAY_OF_MONTH,Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+1);
-        cl.setBackgroundDrawableForDate(cd,c.getTime());
         //TODO: set on moth changed
         //TODO: set on day selected, show list of bok goals for that day.
                 //it will be a lisft of fragments, each one will get id, IsDone, and textToShow params.
                 //when IsDone over there will be checked, it will singnal this activity to advance cur_pos in bookGoals list, and in the data base.
+        cl.setCaldroidListener(new CaldroidListener() {
+            @Override
+            public void onSelectDate(Date date, View view) {
+               //TODO:: show fragments list
+                //TODO:: set selected date with backround
+                Calendar day = Calendar.getInstance();
+                day.setTime(date);
+                ColorDrawable cd = new ColorDrawable(getResources().getColor(R.color.holo_blue_dark));
+                cl.setBackgroundDrawableForDate(cd,day.getTime());
+                //Month is 0 indexed
+                if(day.get(Calendar.MONTH) + 1 > cl.getMonth()) { // if the day selected is in the next month
+                    cl.nextMonth();
+                    fillDaySummary(day);
+                }
+                else if(day.get(Calendar.MONTH) + 1 < cl.getMonth()) {// if the day selected is in the prev month
+                    cl.prevMonth();
+                    fillDaySummary(day);
+                }
+                else
+                    fillDaySummary(day);
+            }
 
+            @Override
+            public void onChangeMonth(int month, int year) {
+                //TODO:: recalc
+                CalcBookGoalsIdxsForThisMonth(month,year);
+            }
+        });
 
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
         t.replace(R.id.calendarView2, cl);
         t.commit();
 
-
-
-
     }
 
+    /**
+     * Reload all date
+     * TODO:: if we have onlineRAM data base, this is not needed...
+     */
+    public void reloadData() {
+        try {
+            Pair<Integer, ArrayList<BookGoal>> p = database.getAllEnabledBookGoals();
+            if(p.first != 0) {
+                Toast.makeText(getApplicationContext(),"Couldn't load data: " + getResources().getString(p.first),Toast.LENGTH_LONG).show();
+            }
+            else this.bookGoals = p.second;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        CalcBookGoalsIdxsForThisMonth(cl.getMonth(),cl.getYear());
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        //TODO: is this needed?? its for safety, but if we have onlineRAM synchrinized backend, this is not needed.
+        reloadData();
+        fillDaySummary(curDate);
+
+    }
     /**
      * fill bookGoalsIdxs for selected month in the calander.
      * TODO: Also filles it with drawables????
      *
-     * @param monthStart
-     * @param monthEnd
+     * @param month
+     * @param year
      */
-    private void CalcBookGoalsIdxsForThisMonth(Calendar monthStart,Calendar monthEnd) {
+    private void CalcBookGoalsIdxsForThisMonth(int month,int year) {
         //TODO: also generate Drawables for Caldroid calander
         //TODO: remember bookGolasIdxs is 1 indexed and not 0-indexed!!!
+        //TODO fix error that in next month isnot working very well, has something to do with Calander.Month is 0- indexed
 
+        Calendar monthStart = Calendar.getInstance(),
+                 monthEnd   = Calendar.getInstance();
+        monthStart.set(Calendar.DAY_OF_MONTH,1);
         int monthLength = monthStart.getActualMaximum(Calendar.DAY_OF_MONTH);
+        monthEnd.set(Calendar.DAY_OF_MONTH,monthLength);
+
 
         bookGoalsIdxsForThisMonth = new ArrayList<ArrayList<Integer>>();
         //init var
-        for(int i = 1; i <= monthStart.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
+        for(int i = 0; i <= monthStart.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
             bookGoalsIdxsForThisMonth.add(new ArrayList<Integer>());
         }
 
@@ -139,18 +191,20 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
             } else { //if starting date is inside month
                 if(b.getEndingDate().after(monthEnd)) {
                     //add to all days statring at starting date
-                    for(int day = b.getStarting_date().get(Calendar.DAY_OF_MONTH); day < monthLength; day++)
+                    for(int day = b.getStarting_date().get(Calendar.DAY_OF_MONTH); day <= monthLength; day++)
                         bookGoalsIdxsForThisMonth.get(day).add(bookIdx);
                 } else if(b.getEndingDate().before(monthStart)) {
                     //TODO: throw error or not???
                 } else {//if end date is also in mont
                     //add days form start date to end date
-                    for(int day = b.getStarting_date().get(Calendar.DAY_OF_MONTH); day < b.getEndingDate().get(Calendar.DAY_OF_MONTH); day++)
+                    for(int day = b.getStarting_date().get(Calendar.DAY_OF_MONTH); day <= b.getEndingDate().get(Calendar.DAY_OF_MONTH); day++)
                         bookGoalsIdxsForThisMonth.get(day).add(bookIdx);
                 }
             }
 
         }
+        int a = 5+5;
+        a *=3;
     }
 
     /**
@@ -186,26 +240,61 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
     }
 
     @Override
-    public void onFragmentInteraction(boolean isDone, int bookGoalId) {
+    public void onFragmentInteraction(CompoundButton checkBox, boolean isDone, int bookGoalId, int pos) {
 
         //TODO:: what to do if error happens???
         if(isDone) {
             //advance bookGoalId cur pos
-            database.advanceBookGoalCur_posById(bookGoalId);
+            int res = database.advanceBookGoalToCur_posById(pos,bookGoalId);
+            if(res != 0) { //error occurred - revert
+                checkBox.setChecked(false);
+                //TODO: bigger mmessgae??
+                Toast.makeText(getApplicationContext(),getResources().getString(res),Toast.LENGTH_SHORT).show();
+                return;
+            }
             //TODO::should reload all instead??
             //find the book goal with the id and advance it
             for(BookGoal b: this.bookGoals) {
-                if(b.getId() == bookGoalId)
-                    b.advanceCur_pos();
+                if(b.getId() == bookGoalId) {
+                    b.setCur_pos(pos);
+                    break;
+                }
             }
         } else { //revert
-            database.undoAdvanceBookGoalCur_posById(bookGoalId);
+            int res = database.undoAdvanceBookGoalToCur_posById(pos,bookGoalId);
+            if(res != 0) {//error - revert
+                checkBox.setChecked(true);
+                Toast.makeText(getApplicationContext(),getResources().getString(res),Toast.LENGTH_SHORT).show();
+                return;
+            }
             //TODO::should reload all instead??
             //find the book goal with the id and advance it
             for(BookGoal b: this.bookGoals) {
-                if(b.getId() == bookGoalId)
-                    b.undoAdvanceCur_pos();
+                if(b.getId() == bookGoalId) {
+                    b.setCur_pos(pos - b.getRate());
+                    break;
+                }
             }
         }
     }
+
+    public void fillDaySummary(Calendar day) {
+        //first empty what is there already
+        ((LinearLayout) findViewById(R.id.lnlyDaySummary)).removeAllViews();
+        if(day == null)return;
+
+        //get all bookGoals from bookGoalsIdxsForThisMonth
+        ArrayList<Integer> idxs = this.bookGoalsIdxsForThisMonth.get(day.get(Calendar.DAY_OF_MONTH));
+        //gen fragments for all idxs
+        for(int i: idxs) {
+            BookGoal b = this.bookGoals.get(i);
+            MainActivityBookGoalSummaryFragment fragment  =  MainActivityBookGoalSummaryFragment.newInstance(
+                                    b.getId(),b.getCur_posForDate(day),b.getColor(),b.getStringSummaryForDay(day),b.isDone(day));
+            getSupportFragmentManager().beginTransaction().add(R.id.lnlyDaySummary,fragment).commit();
+        }
+
+
+
+    }
+
 }

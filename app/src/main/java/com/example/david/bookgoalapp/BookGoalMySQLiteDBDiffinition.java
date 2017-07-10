@@ -51,7 +51,7 @@ public  abstract class BookGoalMySQLiteDBDiffinition {
                 R.color.holo_orange_dark,
                 R.color.holo_red_light,
                 R.color.holo_red_dark,
-                R.color.holo_purple,  0xffff4444   };
+                R.color.holo_purple};
         public static POS_TYPES POS_TYPESvalueOf(String str) throws Exception {
 
             for (POS_TYPES p:POS_TYPES.values())

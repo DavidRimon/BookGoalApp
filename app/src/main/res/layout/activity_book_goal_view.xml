@@ -7,13 +7,11 @@
     tools:context="com.example.david.bookgoalapp.BookGoalViewActivity">
 
     <LinearLayout
-        android:layout_width="368dp"
-        android:layout_height="551dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/caldroid_white"
         android:orientation="vertical"
-        android:windowSoftInputMode="adjustPan"
-        tools:layout_editor_absoluteY="8dp"
-        tools:layout_editor_absoluteX="8dp">
+        android:windowSoftInputMode="adjustPan">
 
         <ImageView
             android:id="@+id/imgvwHeadImg"
@@ -97,24 +95,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp">
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="6dp">
-
-                    <TextView
-                        android:id="@+id/text14"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ID:" />
-
-                    <TextView
-                        android:id="@+id/txtvID"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="TextView" />
-                </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
@@ -265,7 +245,7 @@
 
                     <TextView
                         android:id="@+id/txtvColorSelected"
-                        android:layout_height="match_parent"
+                        android:layout_height="30dp"
                         android:width="30dp"
                         android:shadowRadius="3"
                         android:onClick="chooseColor"
@@ -310,7 +290,8 @@
                     <CheckBox
                         android:id="@+id/chkbxEnabled"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:checked="true"/>
 
                 </TableRow>
 

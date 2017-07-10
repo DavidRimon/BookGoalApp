@@ -12,7 +12,7 @@
     <!-- A light Holo shade of red -->
     <color name="holo_red_light">#ffff4444</color>
     <!-- A dark Holo shade of blue -->
-    <color name="holo_blue_dark">#ff0099cc</color>
+    <color name="holo_blue_dark">#0099cc</color>
     <!-- A dark Holo shade of green -->
     <color name="holo_green_dark">#ff669900</color>
     <!-- A dark Holo shade of red -->

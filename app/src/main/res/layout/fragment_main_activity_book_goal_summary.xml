@@ -7,29 +7,35 @@
     android:background="@color/caldroid_gray"
     android:orientation="horizontal"
     android:weightSum="1"
-    tools:context="com.example.david.bookgoalapp.MainActivityBookGoalSummaryFragment">
+    tools:context="com.example.david.bookgoalapp.MainActivityBookGoalSummaryFragment"
+    android:layout_margin="3dp">
 
     <!-- TODO: Update blank fragment layout -->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnSummaryEdit"
         android:layout_width="wrap_content"
-        android:layout_height="29dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:clickable="true"
         app:backgroundTint="@color/caldroid_holo_blue_light"
         app:fabSize="mini"
-        app:rippleColor="@color/holo_green_light"
+        app:rippleColor="@android:color/holo_green_light"
         app:srcCompat="@android:drawable/ic_menu_edit" />
 
     <CheckBox
         android:id="@+id/cbSummaryIsDone"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/white"/>
 
     <TextView
         android:id="@+id/txtvSummary"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_gravity="center"
+        android:text="@string/hello_blank_fragment"
+        android:layout_margin="5dp"/>
 
 </LinearLayout>

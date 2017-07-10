@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES.AMOD;
 import static com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES.DAF;
@@ -158,8 +159,8 @@ public class BookGoal {
         else if (num >= 40)  return  "מ" + intToHebLetters(num -  40);
         else if (num >= 30)  return  "ל" + intToHebLetters(num -  30);
         else if (num >= 20)  return  "כ" + intToHebLetters(num -  20);
-        else if (num == 16)  return "טו";
-        else if (num == 15)  return "טז";
+        else if (num == 16)  return "טז";
+        else if (num == 15)  return "טו";
         else if (num >= 10)  return  "י" + intToHebLetters(num -  10);
         switch (num) {
             case 9: return "ט";
@@ -171,6 +172,7 @@ public class BookGoal {
             case 3: return "ג";
             case 2: return "ב";
             case 1: return "א";
+            case 0: return "";
         }
 
         return "ERROR";
@@ -188,10 +190,33 @@ public class BookGoal {
         }
         return "ERROR";
     }
-    public String getProcessedCur_pos() {
-        String pos = this.processOnePos(this.cur_pos);
-        if(rate > 1) pos = this.processOnePos(this.cur_pos + this.rate - 1) + " - " + pos;
+    private String getProcessedCur_pos() {
+        return getProcessedPos(this.cur_pos);
+    }
+    public String getProcessedPos(int Pos){
+        String pos = this.processOnePos(Pos);
+        if(rate > 1) pos = this.processOnePos(Pos + this.rate - 1) + " - " + pos;
         return pos;
+    }
+    //TODO::what if cur pos is advanced faster than rate???
+    public int getCur_posForDate(Calendar date) {
+
+        if(date.before(this.starting_date))
+            return -1; //error
+        if(date.after(this.getEndingDate()))
+            return -1;//error
+
+        int diffToDate  = (int) TimeUnit.DAYS.convert(date.getTime().getTime() - this.starting_date.getTime().getTime(),TimeUnit.MILLISECONDS);
+        return start_pos + rate*diffToDate;
+    }
+    /**
+     * Returns whether BookGoal was done on this date.
+     * Returns
+     * @param day
+     * @return true if current position is to do after this date , false if not yet
+     */
+    public boolean isDone(Calendar day) {
+       return this.cur_pos >= getCur_posForDate(day);
     }
     public void setCur_pos(int cur_pos) {
         this.cur_pos = cur_pos;
@@ -252,9 +277,9 @@ public class BookGoal {
     public Calendar getEndingDate() {
         if(endingDate == null) { //if not calculated already
             int numdays = (end_pos - start_pos);
-                    //end =  ceil(end/rate)
+                    //numdays =  ceil(numdays/rate)
                 numdays = (numdays + rate -1) /rate;
-            endingDate = starting_date;
+            endingDate = (Calendar) starting_date.clone();
             endingDate.add(Calendar.DATE,numdays);
         }
         return endingDate;
@@ -295,5 +320,8 @@ public class BookGoal {
     public String toString() {
         //return summary of book goal
         return this.name + " " + getProcessedCur_pos() + ", " + at_time.toString();
+    }
+    public String getStringSummaryForDay(Calendar day) {
+        return this.name + " " + getProcessedPos(getCur_posForDate(day)) + ", " + at_time.toString();
     }
 }

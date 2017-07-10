@@ -46,6 +46,7 @@ public class BookGoalViewActivity extends AppCompatActivity {
     public static final String BookGoalId = "BookGoalId";
 
     private IBackend database = null;
+    private int bookGoalId=-1;
     private boolean addingBookGoalFlag = false;
 
     @Override
@@ -64,17 +65,21 @@ public class BookGoalViewActivity extends AppCompatActivity {
             Pair<Integer,BookGoal> p = database.getBookGoalById(id);
             if(p.first != 0) { //error
                 //TODO: string...
-                Toast.makeText(getApplicationContext(),"Error while loading: " + getResources().getString(p.first),Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Error while loading: " + getResources().getString(p.first),Toast.LENGTH_SHORT).show();
                 //exit
                 goBack(null);
+                return;
             }
             addingBookGoalFlag = false;
             BookGoal b = p.second;
+            this.bookGoalId = id;
             disableEdit();
+            initView();
             fiilBookGoalData(b);
         } else { //add bookGoal
 
             enableEdit();
+            initView();
             addingBookGoalFlag = true;
 
         }
@@ -120,27 +125,37 @@ public class BookGoalViewActivity extends AppCompatActivity {
         ((CheckBox)           findViewById(R.id.chkbxEnabled))  .setEnabled(false);
         ((EditText)           findViewById(R.id.etxtmNote))     .setEnabled(false);
     }
+    private void initView() {
+        //fill spinner with general data
+
+        //TODO:: Alert!!! make lis in this order ONLY. else will be a problem with setting the PosType in view
+        List<String> lis = new ArrayList<String>();
+        for (POS_TYPES p:POS_TYPES.values()) {
+            lis.add(p.toString());
+        }
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,lis);
+        dataAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        ((Spinner) findViewById(R.id.spnrPos_Types)) .setAdapter(dataAdapter);
+    }
     private void fiilBookGoalData(BookGoal b) {
 
-        ((TextView)           findViewById(R.id.txtvID))          .setText(String.valueOf(b.getId()));
+
         ((EditText)           findViewById(R.id.etxtName))        .setText(b.getName());
         ((TextView)           findViewById(R.id.txtvwName))        .setText(b.getName());
         ((EditText)           findViewById(R.id.etxtStartPos))    .setText(String.valueOf(b.getStart_pos()));
         ((EditText)           findViewById(R.id.etxtEndPos))      .setText(String.valueOf(b.getEnd_pos()));
         ((EditText)           findViewById(R.id.etxtCurPos))      .setText(String.valueOf(b.getCur_pos()));
 
-
-        //fill spinner with general data
-        List<String> lis = new ArrayList<String>();
-        for (POS_TYPES p:POS_TYPES.values()) {
-            lis.add(p.toString());
+       //TODO:: find another way to get selected
+        int i;
+        for(i = 0; i <POS_TYPES.values().length; i++ ) {
+            if(b.getPos_type() == POS_TYPES.values()[i])
+                break;
         }
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,lis);
-        dataAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-
-        ((Spinner) findViewById(R.id.spnrPos_Types)) .setAdapter(dataAdapter);
+        //TODO:: what if not found??
         //now set specific data for spinner
-        ((Spinner) findViewById(R.id.spnrPos_Types)).setSelection(lis.indexOf(b.getPos_type()));
+        ((Spinner) findViewById(R.id.spnrPos_Types)).setSelection(i);
 
         ((EditText)           findViewById(R.id.etxtRate))     .setText(String.valueOf(b.getRate()));
         ((EditText)           findViewById(R.id.etxtStartDate)).setText(b.getShortStarting_date());
@@ -152,12 +167,14 @@ public class BookGoalViewActivity extends AppCompatActivity {
     }
     private BookGoal getBookGoalFromView(){
         BookGoal b = new BookGoal();
-
+        b.setId(this.bookGoalId);
         b.setEnabled(((CheckBox)                  findViewById(R.id.chkbxEnabled)).isChecked());
         b.setName(((EditText)                     findViewById(R.id.etxtName)).getText().toString());
         b.setNote(((EditText)                     findViewById(R.id.etxtmNote)).getText().toString());
 
-        b.setId(Integer.valueOf(((TextView)       findViewById(R.id.txtvID)).getText().toString()));
+        //not needed
+        //b.setId(Integer.valueOf(((TextView)       findViewById(R.id.txtvID)).getText().toString()));
+
         b.setRate(Integer.valueOf(((EditText)     findViewById(R.id.etxtRate)).getText().toString()));
         b.setStart_pos(Integer.valueOf(((EditText)findViewById(R.id.etxtStartPos)).getText().toString()));
         b.setEnd_pos(Integer.valueOf(((EditText)  findViewById(R.id.etxtEndPos)).getText().toString()));
@@ -195,13 +212,6 @@ public class BookGoalViewActivity extends AppCompatActivity {
         return b;
     }
 
-    /**
-     * get only the id of BookGoal from this activity view
-     * @return
-     */
-    private int getBookGoalIdFromView() {
-        return Integer.valueOf(((TextView) findViewById(R.id.txtvID)).getText().toString());
-    }
     public void chooseDate(View v) {
         Log.d("tag","messag0");
         new DatePickerDialog(this,
@@ -273,11 +283,14 @@ public class BookGoalViewActivity extends AppCompatActivity {
             //TODO: book goal id --- whats going on witht that? need to get it from view or avoid it???
             int res = database.addBookGoal(getBookGoalFromView());
             if (0 == res) { //adding successful
-                Toast.makeText(this, "BookGoal added successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "BookGoal added successfully", Toast.LENGTH_SHORT).show();
                 //change name heading
                 String newName = ((EditText) findViewById(R.id.etxtName)).getText().toString();
                 ((TextView) findViewById(R.id.txtvwName)).setText(newName);
                 addingBookGoalFlag = false; //its not adding anymore - from here on its editing
+                //get out form activity
+                //TODO:: if won't use go back, so need to pull it back from the data base to get the id. otherwise on deletion there will be an error because bookGoalId wan't load
+                goBack(null);
             } else //error
                 Toast.makeText(this, "Error while adding: " + getString(res), Toast.LENGTH_SHORT).show();
         }
@@ -285,7 +298,7 @@ public class BookGoalViewActivity extends AppCompatActivity {
     public void deleteBookGoal(View view) {
         //delete and exit view
 
-        int res = database.deleteBookGoal(getBookGoalIdFromView());
+        int res = database.deleteBookGoal(this.bookGoalId);
         if(0 == res) { //delete successful
             Toast.makeText(getApplicationContext(),"BookGoal deleted successfully",Toast.LENGTH_SHORT).show();
             goBack(null);

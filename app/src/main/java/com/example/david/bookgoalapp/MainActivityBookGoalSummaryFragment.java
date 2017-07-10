@@ -21,7 +21,7 @@ import org.w3c.dom.Text;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MainActivityBookGoalSummaryFragment.OnFragmentInteractionListener} interface
+ * {@link MainActivityBookGoalSummaryFragment.OnIsDoneChangedListener} interface
  * to handle interaction events.
  * Use the {@link MainActivityBookGoalSummaryFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -32,11 +32,13 @@ public class MainActivityBookGoalSummaryFragment extends Fragment {
     public static final String IsDone = "IsDone";
     public static final String BookGoalId = "BookGoalId";
     public static final String Color = "Color";
+    public static final  String MyCurPos ="My current position";
     public static final String TextToShow = "TextToShow";
 
 
     // TODO: Rename and change types of parameters
     private int bookGoalId;
+    private int myCurPos;
     private int color;
     private boolean isDone;
     private String textToShow;
@@ -54,10 +56,11 @@ public class MainActivityBookGoalSummaryFragment extends Fragment {
      * @return A new instance of fragment MainActivityBookGoalSummaryFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MainActivityBookGoalSummaryFragment newInstance(int bookGoalId,int color,String textToShow,boolean isDone) {
+    public static MainActivityBookGoalSummaryFragment newInstance(int bookGoalId,int mCurPos,int color,String textToShow,boolean isDone) {
         MainActivityBookGoalSummaryFragment fragment = new MainActivityBookGoalSummaryFragment();
         Bundle args = new Bundle();
         args.putInt(BookGoalId, bookGoalId);
+        args.putInt(MyCurPos,mCurPos);
         args.putInt(Color,color);
         args.putString(TextToShow, textToShow);
         args.putBoolean(IsDone,isDone);
@@ -72,6 +75,7 @@ public class MainActivityBookGoalSummaryFragment extends Fragment {
         if (getArguments() != null) {
             this.isDone = getArguments().getBoolean(IsDone);
             this.bookGoalId = getArguments().getInt(BookGoalId);
+            this.myCurPos = getArguments().getInt(MyCurPos);
             this.color = getArguments().getInt(Color);
             this.textToShow = getArguments().getString(TextToShow);
         }
@@ -82,7 +86,6 @@ public class MainActivityBookGoalSummaryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v =  inflater.inflate(R.layout.fragment_main_activity_book_goal_summary, container, false);
-
         //set the background color
         ((LinearLayout)v.findViewById(R.id.lnlySummary)).setBackgroundColor(this.color);
         //set the text
@@ -96,11 +99,15 @@ public class MainActivityBookGoalSummaryFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        //set the on checked button
+        //set the checkbox ischecked
+        ((CheckBox)v.findViewById(R.id.cbSummaryIsDone)).setChecked(this.isDone);
+        //set the on checked button listener
         ((CheckBox)v.findViewById(R.id.cbSummaryIsDone)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-             MainActivityBookGoalSummaryFragment.this.mListener.onFragmentInteraction(b,MainActivityBookGoalSummaryFragment.this.bookGoalId);
+            public void onCheckedChanged(CompoundButton checkBox, boolean isChecked) {
+             MainActivityBookGoalSummaryFragment.this.mListener.onFragmentInteraction(checkBox,isChecked,
+                                                        MainActivityBookGoalSummaryFragment.this.bookGoalId,
+                                                        MainActivityBookGoalSummaryFragment.this.myCurPos);
             }
         });
 
@@ -136,7 +143,13 @@ public class MainActivityBookGoalSummaryFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnIsDoneChangedListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(boolean isDone,int bookGoalId);
+        /**
+         *
+         * @param checkBox
+         * @param isDone
+         * @param bookGoalId
+         * @param pos cur_pos of sending fragment
+         */
+        void onFragmentInteraction(CompoundButton checkBox,boolean isDone,int bookGoalId,int pos);
     }
 }
