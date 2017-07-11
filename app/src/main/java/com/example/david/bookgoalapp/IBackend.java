@@ -66,4 +66,5 @@ public interface IBackend{
     public Pair<Integer,BookGoal> getBookGoalByName(String name);
     public Pair<Integer,ArrayList<BookGoal>> getAllBookGoals();
     public Pair<Integer,ArrayList<BookGoal>> getAllEnabledBookGoals();
+    public Pair<Integer,ArrayList<BookGoal>> getAllDisabledBookGoals();
 }

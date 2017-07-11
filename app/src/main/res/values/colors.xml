@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimary">#3f51b5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <!-- A light Holo shade of blue -->
@@ -22,11 +22,11 @@
     <!-- A light Holo shade of orange -->
     <color name="holo_orange_light">#ffffbb33</color>
     <!-- A dark Holo shade of orange -->
-    <color name="holo_orange_dark">#ffff8800</color>
+    <color name="holo_orange_dark">#ff8800</color>
     <!-- A really bright Holo shade of blue -->
     <color name="holo_blue_bright">#ff00ddff</color>
     <!-- A really bright Holo shade of gray -->
-    <color name="holo_gray_bright">#33CCCCCC</color>
+    <color name="holo_gray_bright">#33cccccc</color>
 
     <array name="myColors">
         <item>@color/holo_blue_light</item>

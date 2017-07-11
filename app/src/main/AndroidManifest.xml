@@ -22,8 +22,13 @@
             android:name=".DayViewActivity"
             android:label="@string/title_activity_day_view"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".BookGoalViewActivity"
-            android:windowSoftInputMode="stateHidden"></activity>
+        <activity
+            android:name=".BookGoalViewActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ShowAllBookGoalsActivity"
+            android:label="@string/title_activity_show_all_book_goals"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

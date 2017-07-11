@@ -2,6 +2,7 @@ package com.example.david.bookgoalapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -20,9 +21,11 @@ import android.view.WindowManager;
 import android.widget.CalendarView;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES;
 import com.roomorama.caldroid.CaldroidFragment;
+import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
 import com.thebluealliance.spectrum.SpectrumDialog;
 
@@ -32,12 +35,15 @@ import java.util.Date;
 import java.util.Vector;
 
 import static com.example.david.bookgoalapp.R.id.fab;
+import static com.example.david.bookgoalapp.R.id.weekday_gridview;
 
 public class MainActivity extends AppCompatActivity implements MainActivityBookGoalSummaryFragment.OnIsDoneChangedListener {
 
     //TODO: should make backendOnRam and that will work with the SQLBackend, so all activities canrefrens that ramDB instead of the DB been here in MainActivvity
     private IBackend database;
+    //TODO:: all of book goal data here is not really needed, because BookGoalActivityView loads it anywas from SQL db
     private ArrayList<BookGoal> bookGoals;
+
     /**
      * Array list for a list of bookgoals idxs (in @this.bookGoals element) for each day in the month.
      * Index zero shouldn't be used! because this array is 1 indexed (like days in the month)
@@ -47,6 +53,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
     private Calendar curDate = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //TODO::: make custom text for caldroid. has todo with, caldroid grid adapter, look for cutome text on caldroid online.
+        //TODO:: make activity to show all book goals
+        //TODO:: make activity for predefined bookGoals
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -91,27 +100,43 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
             public void onSelectDate(Date date, View view) {
                //TODO:: show fragments list
                 //TODO:: set selected date with backround
-                Calendar day = Calendar.getInstance();
-                day.setTime(date);
-                ColorDrawable cd = new ColorDrawable(getResources().getColor(R.color.holo_blue_dark));
-                cl.setBackgroundDrawableForDate(cd,day.getTime());
+
+                //clear prev date selection
+                ColorDrawable cd = new ColorDrawable(getResources().getColor(R.color.caldroid_holo_blue_dark));
+                if(curDate !=null)
+                    cl.clearBackgroundDrawableForDate(curDate.getTime());
+
+                //set new day selection
+                cd.setColor(getResources().getColor(R.color.caldroid_holo_blue_light));
+                cl.setBackgroundDrawableForDate(cd,date);
+                if(curDate == null)
+                    curDate = Calendar.getInstance();
+
+                curDate.setTime(date);
+
+
                 //Month is 0 indexed
-                if(day.get(Calendar.MONTH) + 1 > cl.getMonth()) { // if the day selected is in the next month
+                if(curDate.get(Calendar.MONTH) + 1 > cl.getMonth()) { // if the day selected is in the next month
                     cl.nextMonth();
-                    fillDaySummary(day);
+                    fillDaySummary(curDate);
                 }
-                else if(day.get(Calendar.MONTH) + 1 < cl.getMonth()) {// if the day selected is in the prev month
+                else if(curDate.get(Calendar.MONTH) + 1 < cl.getMonth()) {// if the day selected is in the prev month
                     cl.prevMonth();
-                    fillDaySummary(day);
+                    fillDaySummary(curDate);
                 }
                 else
-                    fillDaySummary(day);
+                    fillDaySummary(curDate);
+
+                cl.refreshView();
             }
 
             @Override
             public void onChangeMonth(int month, int year) {
                 //TODO:: recalc
-                CalcBookGoalsIdxsForThisMonth(month,year);
+                //TODO:: explain why 1 helps here / fix it: because month hre given is the prev month, that we are moving FROM?
+                CalcBookGoalsIdxsForThisMonth(month-1,year);
+                //clear day summary view - if needed it will be filled up again.
+                fillDaySummary(null);
             }
         });
 
@@ -160,8 +185,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         Calendar monthStart = Calendar.getInstance(),
                  monthEnd   = Calendar.getInstance();
         monthStart.set(Calendar.DAY_OF_MONTH,1);
+        monthStart.set(Calendar.MONTH,month);
+        monthStart.set(Calendar.YEAR,year);
+
         int monthLength = monthStart.getActualMaximum(Calendar.DAY_OF_MONTH);
         monthEnd.set(Calendar.DAY_OF_MONTH,monthLength);
+        monthEnd.set(Calendar.MONTH,month);
+        monthEnd.set(Calendar.YEAR,year);
 
 
         bookGoalsIdxsForThisMonth = new ArrayList<ArrayList<Integer>>();
@@ -175,28 +205,33 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         for(int bookIdx = 0; bookIdx< bookGoals.size(); bookIdx++) {
             BookGoal b = bookGoals.get(bookIdx);
 
+            //TODO:: what about date times?? do they matter here???
             if(b.getStarting_date().before(monthStart)) {
                 if(b.getEndingDate().before(monthStart)){
                     //do nothing....
                 } else if(b.getEndingDate().after(monthEnd)){
                     //then this whole month is filled with this book goal
-                    for(int day = 1; day <= monthLength; day++)
+                    for(int day = 1; day <= monthLength; day++) {
                         bookGoalsIdxsForThisMonth.get(day).add(bookIdx); //add this bookGOal index to that day
+                    }
                 } else { //endDate is inside this month
                     for(int day = 1; day <= b.getEndingDate().get(Calendar.DAY_OF_MONTH); day++)
                         bookGoalsIdxsForThisMonth.get(day).add(bookIdx); //add this bookGOal index to that day
                 }
             } else if(b.getStarting_date().after(monthEnd)) {
                 //do nothing...
-            } else { //if starting date is inside month
-                if(b.getEndingDate().after(monthEnd)) {
+            } else if(b.getStarting_date().after(monthStart)){
+                if( b.getStarting_date().after(monthEnd)) {
+                    //do nothing....
+                }
+                else if(b.getEndingDate().after(monthEnd)) {//if starting date is inside month
                     //add to all days statring at starting date
                     for(int day = b.getStarting_date().get(Calendar.DAY_OF_MONTH); day <= monthLength; day++)
                         bookGoalsIdxsForThisMonth.get(day).add(bookIdx);
                 } else if(b.getEndingDate().before(monthStart)) {
                     //TODO: throw error or not???
-                } else {//if end date is also in mont
-                    //add days form start date to end date
+                } else {//if end date is also in month - b.getEndingDate < monthEnd
+                    //add days form start date to end date/יעש
                     for(int day = b.getStarting_date().get(Calendar.DAY_OF_MONTH); day <= b.getEndingDate().get(Calendar.DAY_OF_MONTH); day++)
                         bookGoalsIdxsForThisMonth.get(day).add(bookIdx);
                 }

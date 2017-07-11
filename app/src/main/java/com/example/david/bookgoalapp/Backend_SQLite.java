@@ -425,4 +425,27 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
 
         return new Pair<>(0,goals);
     }
+
+    @Override
+    public Pair<Integer, ArrayList<BookGoal>> getAllDisabledBookGoals() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c= db.query(BookGoalMySQLiteDBDiffinition.TABLE_BOOKGOAL_NAME,
+                null," enabled=0 ",null,null,null,null); //get everything
+        BookGoal b;
+        ArrayList<BookGoal> goals = new ArrayList<>();
+        c.moveToFirst();
+
+        for(c.moveToFirst();!c.isAfterLast();c.moveToNext()) {
+            try {
+                b = getBookGoalFromCursor(c);
+            } catch (Exception e) {
+                int code = Integer.valueOf(e.getMessage());//if conversion doesn't work it must be
+                //anouther exception we don't know about, throw it again111
+                return new Pair<>(code,null); //if it work, then its probably one of our exeptions
+            }
+            goals.add(b);
+        }
+
+        return new Pair<>(0,goals);
+    }
 }
