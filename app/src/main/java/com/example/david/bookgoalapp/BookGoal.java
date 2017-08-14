@@ -9,11 +9,7 @@ import com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTable
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import static com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES.AMOD;
-import static com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES.DAF;
-import static com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES.PAGE;
-import static com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES.PEREK;
-
+import static com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES.*;
 /**
  * Created by David on 24-Jun-17.
  */
@@ -162,20 +158,24 @@ public class BookGoal {
         else if (num == 16)  return "טז";
         else if (num == 15)  return "טו";
         else if (num >= 10)  return  "י" + intToHebLetters(num -  10);
-        switch (num) {
-            case 9: return "ט";
-            case 8: return "ח";
-            case 7: return "ז";
-            case 6: return "ו";
-            case 5: return "ה";
-            case 4: return "ד";
-            case 3: return "ג";
-            case 2: return "ב";
-            case 1: return "א";
-            case 0: return "";
+        else if (num >= 0 ) {
+            switch (num) {
+                case 9:return "ט";
+                case 8:return "ח";
+                case 7:return "ז";
+                case 6:return "ו";
+                case 5:return "ה";
+                case 4:return "ד";
+                case 3:return "ג";
+                case 2:return "ב";
+                case 1:return "א";
+                case 0:return "";
+            }
         }
 
-        return "ERROR";
+       else return "ERROR";
+
+        return "";
     }
     private String processOnePos(int pos) {
         switch (this.pos_type) {

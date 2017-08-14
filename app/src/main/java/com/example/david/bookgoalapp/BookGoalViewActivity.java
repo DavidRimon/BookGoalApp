@@ -166,6 +166,7 @@ public class BookGoalViewActivity extends AppCompatActivity {
 
     }
     private BookGoal getBookGoalFromView(){
+
         BookGoal b = new BookGoal();
         b.setId(this.bookGoalId);
         b.setEnabled(((CheckBox)                  findViewById(R.id.chkbxEnabled)).isChecked());
@@ -211,7 +212,18 @@ public class BookGoalViewActivity extends AppCompatActivity {
 
         return b;
     }
+    private boolean isFullWithData() {
+        return
 
+                (((EditText)    findViewById(R.id.etxtName))            .getText().length() != 0) &&
+                (((EditText)    findViewById(R.id.etxtStartPos))        .getText().length() != 0) &&
+                (((EditText)    findViewById(R.id.etxtEndPos))          .getText().length() != 0) &&
+                (((EditText)    findViewById(R.id.etxtCurPos))          .getText().length() != 0) &&
+                (((EditText)    findViewById(R.id.etxtRate))            .getText().length() != 0) &&
+                (((EditText)    findViewById(R.id.etxtStartDate))       .getText().length() != 0) &&
+                (((EditText)    findViewById(R.id.etxtEveryDayAt))      .getText().length() != 0) ;
+
+    }
     public void chooseDate(View v) {
         Log.d("tag","messag0");
         new DatePickerDialog(this,
@@ -237,7 +249,18 @@ public class BookGoalViewActivity extends AppCompatActivity {
                 new TimePickerDialog.OnTimeSetListener(){
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                        ((EditText) findViewById(R.id.etxtEveryDayAt)).setText(hour + ":" + minute);
+
+                        //make sure to allways show 2-digit number time. (09:00)
+                        String textTimeToShow = "";
+                        if(hour < 10)
+                            textTimeToShow += "0";
+                        textTimeToShow += hour;
+                        textTimeToShow += ":";
+                        if(minute < 10)
+                            textTimeToShow += "0";
+                        textTimeToShow += minute;
+
+                        ((EditText) findViewById(R.id.etxtEveryDayAt)).setText(textTimeToShow);
                     }
                 },
                 Calendar.getInstance().get(Calendar.HOUR_OF_DAY),Calendar.getInstance().get(Calendar.MINUTE),
@@ -266,11 +289,18 @@ public class BookGoalViewActivity extends AppCompatActivity {
         enableEdit();
     }
     public void SaveBookGoal(View view) {
+
+        if(!isFullWithData()) {
+            Toast.makeText(this,"Some date fields are still empty",Toast.LENGTH_SHORT).show();
+            return;
+        }
         disableEdit();
 
         if(addingBookGoalFlag == false) {
+            //check that there is data to collect
 
             int res = database.editBookGoal(getBookGoalFromView());
+
             if (0 == res) { //edit successful
                 Toast.makeText(this, "BookGoal edited successfully", Toast.LENGTH_SHORT).show();
                 //change name heading

@@ -8,10 +8,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/caldroid_white"
         android:orientation="vertical"
-        android:windowSoftInputMode="adjustPan">
+        android:windowSoftInputMode="adjustPan"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
 
         <ImageView
             android:id="@+id/imgvwHeadImg"
@@ -26,7 +28,6 @@
             android:layout_height="wrap_content"
 
             android:gravity="center"
-            android:text="Name"
             android:textSize="30dp" />
 
         <LinearLayout
@@ -41,10 +42,10 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:onClick="goBack"
                 app:backgroundTint="@color/caldroid_holo_blue_light"
                 app:fabSize="mini"
-                app:srcCompat="@android:drawable/ic_menu_revert"
-                android:onClick="goBack"/>
+                app:srcCompat="@android:drawable/ic_menu_revert" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/btnEdit"
@@ -65,10 +66,10 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:onClick="SaveBookGoal"
                 app:backgroundTint="@color/caldroid_holo_blue_light"
                 app:fabSize="mini"
-                app:srcCompat="@android:drawable/ic_menu_save"
-                android:onClick="SaveBookGoal"/>
+                app:srcCompat="@android:drawable/ic_menu_save" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/btnDelete"
@@ -131,7 +132,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:inputType="numberSigned" />
+                        android:inputType="numberSigned"
+                        android:text="1" />
 
                 </TableRow>
 
@@ -167,6 +169,7 @@
 
                     <EditText
                         android:id="@+id/etxtCurPos"
+                        android:text="1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ems="10"
@@ -207,7 +210,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:inputType="numberSigned" />
+                        android:inputType="numberSigned"
+                        android:text="1" />
                 </TableRow>
 
                 <TableRow
@@ -228,7 +232,7 @@
                         android:ems="10"
                         android:focusableInTouchMode="false"
                         android:inputType="date"
-                        android:onClick="chooseDate"/>
+                        android:onClick="chooseDate" />
 
                 </TableRow>
 
@@ -246,11 +250,11 @@
                     <TextView
                         android:id="@+id/txtvColorSelected"
                         android:layout_height="30dp"
+                        android:layout_gravity="left"
                         android:width="30dp"
-                        android:shadowRadius="3"
-                        android:onClick="chooseColor"
                         android:background="@color/holo_blue_light"
-                        android:layout_gravity="left"/>
+                        android:onClick="chooseColor"
+                        android:shadowRadius="3" />
 
                 </TableRow>
 
@@ -270,8 +274,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:inputType="time"
                         android:focusableInTouchMode="false"
+                        android:inputType="time"
                         android:onClick="chooseTime" />
 
                 </TableRow>
@@ -291,7 +295,7 @@
                         android:id="@+id/chkbxEnabled"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"/>
+                        android:checked="true" />
 
                 </TableRow>
 

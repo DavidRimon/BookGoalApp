@@ -266,6 +266,22 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
         return 0;
     }
 
+    @Override
+    public int fastSetEnabledById(int id, boolean enabled) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String sqlStmt = "update " + TABLE_BOOKGOAL_NAME +
+                            " set " + BookGoalTableDiffinition.COLUMN_ENABLED +
+                            " =  " + (enabled ? 1:0) +
+                            " where " + BookGoalTableDiffinition.COLUMN_ID +
+                            " = ?";
+        SQLiteStatement stmt = db.compileStatement(sqlStmt);
+        stmt.bindLong(1,id);
+        if(stmt.executeUpdateDelete() == 0) //no rows affected
+            //TODO:: change string message?
+            return R.string.couldn_t_update_bookgoal_in_database;
+        return 0;
+    }
+
     /**
      * Delete BookGoal instance from database. Will find what to delete by id.
      * @param bookGoalId id of BookGoal to delete.

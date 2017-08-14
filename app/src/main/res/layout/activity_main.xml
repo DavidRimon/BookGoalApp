@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@android:style/Theme.NoTitleBar"
@@ -21,15 +22,42 @@
 
     <!--</android.support.design.widget.AppBarLayout>-->
 
-    <android.support.design.widget.FloatingActionButton
+    <!--android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/holo_blue_dark"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:elevation="5dp"
+        app:srcCompat="@drawable/ic_add_book" /-->
 
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fabmMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:elevation="5dp"
+        app:menu_fab_size="mini"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_book_white"
+            app:fab_label="Add" />
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabShowAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_label="Show all"
+            android:src="@android:drawable/ic_menu_view"
+            />
+
+    </com.github.clans.fab.FloatingActionMenu>
     <include
         android:id="@+id/include"
         layout="@layout/content_main" />

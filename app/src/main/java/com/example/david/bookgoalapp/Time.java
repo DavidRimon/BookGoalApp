@@ -38,7 +38,17 @@ public class Time {
     }
     @Override
     public String toString() {
-        return String.valueOf(this.hours) + ":" + String.valueOf(this.minitues);
+        //make sure to allways show 2-digit number time. (09:00)
+        String textTimeToShow = "";
+        if(hours < 10)
+            textTimeToShow += "0";
+        textTimeToShow += hours;
+        textTimeToShow += ":";
+        if(minitues < 10)
+            textTimeToShow += "0";
+        textTimeToShow += minitues;
+
+        return textTimeToShow;
     }
 
     public int getHours() {

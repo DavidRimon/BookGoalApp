@@ -55,6 +55,14 @@ public interface IBackend{
      * @return
      */
     public int undoAdvanceBookGoalToCur_posById(int pos,int bookGoalId);
+
+    /**
+     * fast set book enabled/disabled by id
+     * @param id
+     * @param enabled
+     * @return
+     */
+    public int fastSetEnabledById(int id, boolean enabled);
     /**
      *
      * @param bookGoalId

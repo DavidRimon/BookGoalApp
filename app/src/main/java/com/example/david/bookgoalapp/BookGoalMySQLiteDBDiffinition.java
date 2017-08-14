@@ -33,7 +33,11 @@ public  abstract class BookGoalMySQLiteDBDiffinition {
             AMOD("עמוד"),//using this will make start and end refer to amod
             DAF("דף"),
             PEREK("פרק"),
+            MISHNA("משנה"),
+            PARASHA("פרשה"),
+            HALACHA("הלכה"),
             PAGE("page");
+
             private final String text;
             private POS_TYPES(String text){
                 this.text = text;

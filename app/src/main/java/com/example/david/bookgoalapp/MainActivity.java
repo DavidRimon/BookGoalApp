@@ -1,7 +1,12 @@
 package com.example.david.bookgoalapp;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -10,9 +15,11 @@ import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES;
+import com.github.clans.fab.FloatingActionMenu;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
@@ -50,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
      */
     private ArrayList<ArrayList<Integer>> bookGoalsIdxsForThisMonth;
     private CaldroidFragment cl;
+    /**
+     * currently selected date
+     */
     private Calendar curDate = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +81,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        com.github.clans.fab.FloatingActionButton fab = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabAdd);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,21 +89,37 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
                 startActivity(intent);
             }
         });
+                                                  fab = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabShowAll);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),ShowAllBookGoalsActivity.class);
+                startActivity(intent);
+            }
+        });
 
+        setUpCaldroid();
 
+        setUpNotification();
+
+    }
+
+    /**
+     * set up the caldroid calander fragment
+     */
+    private void setUpCaldroid() {
         cl = new CaldroidFragment();
-
         Bundle args = new Bundle();
         Calendar cal = Calendar.getInstance();
-        args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
+        args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1); //caldroid uses 1-indexed month number
         args.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
         args.putBoolean(CaldroidFragment.ENABLE_SWIPE,true);
         args.putBoolean(CaldroidFragment.SQUARE_TEXT_VIEW_CELL,true);
         cl.setArguments(args);
         //TODO: set on moth changed
         //TODO: set on day selected, show list of bok goals for that day.
-                //it will be a lisft of fragments, each one will get id, IsDone, and textToShow params.
-                //when IsDone over there will be checked, it will singnal this activity to advance cur_pos in bookGoals list, and in the data base.
+        //it will be a lisft of fragments, each one will get id, IsDone, and textToShow params.
+        //when IsDone over there will be checked, it will singnal this activity to advance cur_pos in bookGoals list, and in the data base.
         cl.setCaldroidListener(new CaldroidListener() {
             @Override
             public void onSelectDate(Date date, View view) {
@@ -139,11 +164,39 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
                 fillDaySummary(null);
             }
         });
-
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
         t.replace(R.id.calendarView2, cl);
         t.commit();
+    }
+    /**
+     * set up the notification for the app. Must be launch after caldroid is set for this month! - only once at app startup!
+     */
+    private void setUpNotification() {
+        Intent resultIntent = new Intent(this,MainActivity.class);
+        PendingIntent  resultPendingIntent = PendingIntent.getActivity(this,0,
+                resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+        String shortSummary = "", longSummary = "";
+        Calendar today = Calendar.getInstance();
+        CalcBookGoalsIdxsForThisMonth(today.get(Calendar.MONTH),today.get(Calendar.YEAR));
+        //get today's bookGoals
+        ArrayList<Integer> bookGoalsIdxs = bookGoalsIdxsForThisMonth.get(today.get(Calendar.DAY_OF_MONTH));
+        for(int idx : bookGoalsIdxs) {
+            shortSummary += bookGoals.get(idx).getName() + " ,";
+            longSummary  += bookGoals.get(idx).getStringSummaryForDay(today) +"\n";
+        }
+        //TODO:: this shortSummary.toCharArray()[shortSummary.length() - 1 ] = '.';
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_stat_name);
 
+//TODO:: make a string from resource
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                                                .setSmallIcon(R.drawable.ic_stat_name3)
+                                                .setColor(getResources().getColor(R.color.caldroid_holo_blue_light))
+                                                .setContentTitle("Learn today")
+                                                .setContentText(shortSummary)
+                                                .setStyle(new NotificationCompat.BigTextStyle().bigText(longSummary))
+                                                .setContentIntent(resultPendingIntent);
+        NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mgr.notify(001,mBuilder.build());
     }
 
     /**
@@ -160,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         } catch (Exception e) {
             e.printStackTrace();
         }
-        CalcBookGoalsIdxsForThisMonth(cl.getMonth(),cl.getYear());
+        CalcBookGoalsIdxsForThisMonth(cl.getMonth() - 1,cl.getYear()); // CalcBooks uses 0-indexed month number
     }
     @Override
     public void onResume() {
@@ -170,14 +223,37 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         fillDaySummary(curDate);
 
     }
+
+    /**
+     * Make floating action menu close when tuched outside of its area
+     *
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean dispatchTouchEvent (MotionEvent event) {
+
+        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+            com.github.clans.fab.FloatingActionMenu fabm = (FloatingActionMenu) findViewById(R.id.fabmMenu);
+            if(fabm.isOpened()) {
+                Rect outRect = new Rect();
+                fabm.getGlobalVisibleRect(outRect);
+
+                if(!outRect.contains((int)event.getRawX(),(int)event.getRawY()))
+                    fabm.close(true);
+            }
+        }
+        return super.dispatchTouchEvent(event);
+    }
+
     /**
      * fill bookGoalsIdxs for selected month in the calander.
      * TODO: Also filles it with drawables????
      *
-     * @param month
+     * @param month 0-indexed month number
      * @param year
      */
-    private void CalcBookGoalsIdxsForThisMonth(int month,int year) {
+    private void CalcBookGoalsIdxsForThisMonth(final int month,int year) {
         //TODO: also generate Drawables for Caldroid calander
         //TODO: remember bookGolasIdxs is 1 indexed and not 0-indexed!!!
         //TODO fix error that in next month isnot working very well, has something to do with Calander.Month is 0- indexed
@@ -321,15 +397,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         //get all bookGoals from bookGoalsIdxsForThisMonth
         ArrayList<Integer> idxs = this.bookGoalsIdxsForThisMonth.get(day.get(Calendar.DAY_OF_MONTH));
         //gen fragments for all idxs
+
+        FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
         for(int i: idxs) {
             BookGoal b = this.bookGoals.get(i);
+            //TODO: reuse fragments instead of creating new ones to speed up the app
             MainActivityBookGoalSummaryFragment fragment  =  MainActivityBookGoalSummaryFragment.newInstance(
                                     b.getId(),b.getCur_posForDate(day),b.getColor(),b.getStringSummaryForDay(day),b.isDone(day));
-            getSupportFragmentManager().beginTransaction().add(R.id.lnlyDaySummary,fragment).commit();
+            fragmentTransaction.add(R.id.lnlyDaySummary,fragment);
         }
-
-
-
+        fragmentTransaction.commit();
     }
 
 }
