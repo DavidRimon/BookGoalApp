@@ -1,14 +1,11 @@
 package com.example.david.bookgoalapp;
 
 import android.app.DatePickerDialog;
-import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,12 +14,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -31,18 +25,11 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES;
 import com.thebluealliance.spectrum.SpectrumDialog;
-import com.thebluealliance.spectrum.SpectrumPalette;
-import com.thebluealliance.spectrum.SpectrumPreferenceCompat;
-
-import static com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.COLORS_ARRAY;
-import static com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPESvalueOf;
 
 public class BookGoalViewActivity extends AppCompatActivity {
 
@@ -67,7 +54,6 @@ public class BookGoalViewActivity extends AppCompatActivity {
 
             Pair<Integer,BookGoal> p = database.getBookGoalById(id);
             if(p.first != 0) { //error
-                //TODO: string...
                 Toast.makeText(getApplicationContext(),getString(R.string.error_while_loading) + getResources().getString(p.first),Toast.LENGTH_SHORT).show();
                 //exit
                 goBack(null);
@@ -155,7 +141,8 @@ public class BookGoalViewActivity extends AppCompatActivity {
             if(b.getPos_type() == POS_TYPES.values()[i])
                 break;
         }
-        //TODO:: what if not found??
+        //what if not found? - will just show one of the other values.
+
         //now set specific data for spinner
         ((Spinner) findViewById(R.id.spnrPos_Types)).setSelection(i);
 
@@ -170,7 +157,7 @@ public class BookGoalViewActivity extends AppCompatActivity {
     private BookGoal getBookGoalFromView(){
 
         BookGoal b = new BookGoal();
-        b.setId(this.bookGoalId);
+        b.setId(this.bookGoalId); //not really needed, but why not? may save us some trouble in the future
         b.setEnabled(((CheckBox)                  findViewById(R.id.chkbxEnabled)).isChecked());
         b.setName(((EditText)                     findViewById(R.id.etxtName)).getText().toString());
         b.setNote(((EditText)                     findViewById(R.id.etxtmNote)).getText().toString());
@@ -312,7 +299,6 @@ public class BookGoalViewActivity extends AppCompatActivity {
                 Toast.makeText(this, getString(R.string.error_while_updating) + getString(res), Toast.LENGTH_SHORT).show();
 
         } else { //if this is adding command
-            //TODO: book goal id --- whats going on witht that? need to get it from view or avoid it???
             int res = database.addBookGoal(getBookGoalFromView());
             if (0 == res) { //adding successful
                 Toast.makeText(getApplicationContext(), R.string.bookgoal_added_successfully, Toast.LENGTH_SHORT).show();
@@ -321,7 +307,10 @@ public class BookGoalViewActivity extends AppCompatActivity {
                 ((TextView) findViewById(R.id.txtvwName)).setText(newName);
                 addingBookGoalFlag = false; //its not adding anymore - from here on its editing
                 //get out form activity
-                //TODO:: if won't use go back, so need to pull it back from the data base to get the id. otherwise on deletion there will be an error because bookGoalId wan't load
+
+                //if won't use go back, so need to pull it back from the data base to
+                // get the id. otherwise on deletion there will be an error because
+                // bookGoalId wan't load
                 goBack(null);
             } else //error
                 Toast.makeText(this, getString(R.string.error_while_adding) + getString(res), Toast.LENGTH_SHORT).show();

@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.ConfigurationHelper;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
@@ -27,17 +28,31 @@ public class ShowAllBookGoalsActivity extends AppCompatActivity implements MainA
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),BookGoalViewActivity.class);
-                startActivity(intent);
-            }
-        });
 
         database = Backend_SQLite.getInstance(getApplicationContext());
+
+        setUpSwipeRefresh();
         //add to Linear Layout child layout all bookGoals in data base
+        initLayout();
+    }
+
+    private void setUpSwipeRefresh() {
+
+        final SwipeRefreshLayout srl = (SwipeRefreshLayout) findViewById(R.id.srlShowAll);
+
+        srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                boolean enables =  ((CheckBox) findViewById(R.id.cbEnableds)).isChecked(),
+                        disables = ((CheckBox) findViewById(R.id.cbDisableds)).isChecked();
+                updateLayout(enables,disables);
+                srl.setRefreshing(false);
+            }
+        });
+        srl.setColorSchemeResources(R.color.caldroid_light_red,R.color.caldroid_holo_blue_light,R.color.holo_orange_light);
+    }
+
+    private void initLayout() {
         boolean enables =  ((CheckBox) this.findViewById(R.id.cbEnableds)).isChecked(),
                 disables = ((CheckBox) this.findViewById(R.id.cbDisableds)).isChecked();
 
@@ -60,7 +75,7 @@ public class ShowAllBookGoalsActivity extends AppCompatActivity implements MainA
 
     private void updateLayout(boolean showEnableds, boolean showDisableds) {
 
-        //TODO:: do in sperate thread?
+        //do in separate thread? apparently there is no need, its fast enough
 
         Pair<Integer,ArrayList<BookGoal>> p;
         if(showEnableds && showDisableds)
@@ -117,7 +132,7 @@ public class ShowAllBookGoalsActivity extends AppCompatActivity implements MainA
             //error occurred
             Toast.makeText(this,res,Toast.LENGTH_SHORT).show();
         }
-        //TODO:: update in view ?
+        //update in view ? no - it will be a problem if clicked un intentional
 
     }
 }

@@ -2,19 +2,15 @@
     <string name="app_name">BookGoalApp</string>
     <string name="action_settings">Settings</string>
     <string name="couldn_t_add_bookgoal_to_database">Couldn\'t add BookGoal to database</string>
-    <string name="sdfsdf">sdfsdf</string>
     <string name="couldn_t_update_bookgoal_in_database">Couldn\'t update BookGoal in database</string>
     <string name="couldn_t_delete_row_from_database">Couldn\'t delete row from database</string>
     <string name="couldn_t_find_bookgoal_in_database">Couldn\'t find BookGoal in database</string>
     <string name="couldn_t_parse_time_got_from_data_base">Couldn\'t parse time got from data base</string>
-    <string name="couldn_t_pare_time_got_from_database">Couldn\'t pare time got from database</string>
     <string name="title_activity_day_view">DayViewActivity</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_show_all_book_goals">ShowAllBookGoalsActivity</string>
-    <string name="title_activity_scrolling">ScrollingActivity</string>
-    <string name="error">ERROR</string>
     <string name="error_while_loading">Error while loading:</string>
     <string name="invalid_pos_fields">invalid position fields</string>
     <string name="invalid_pos_type">invalid position type.</string>
@@ -45,7 +41,8 @@
     <string name="all_bookgoals">All book goals</string>
     <string name="add">Add</string>
     <string name="show_all">Show all</string>
-    <string name="settings">settings</string>
     <string name="did_you_learn_today">Did you learn today? Touch to see!</string>
+    <string name="couldnt_update_cur_pos">couldn\'t advance cur pos</string>
+    <string name="ending_date_before_start">error: ending date is before start date</string>
 
 </resources>

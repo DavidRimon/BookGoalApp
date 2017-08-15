@@ -88,7 +88,7 @@ public class BookGoal {
         BookGoal b = (BookGoal) o;
         if(
                 this.id == b.id &&
-                this.name == b.name &&
+                this.name.equals(b.name) &&
                 this.start_pos == b.start_pos &&
                 this.end_pos == b.end_pos &&
                 this.cur_pos == b.cur_pos &&
@@ -98,7 +98,7 @@ public class BookGoal {
                 this.at_time.equals(b.at_time) &&
                 this.color == b.color &&
                 this.isEnabled() == b.isEnabled() &&
-                this.note == b.getNote()
+                this.note.equals(b.getNote())
                 )
             return true;
         else return false;
@@ -139,7 +139,8 @@ public class BookGoal {
     public int getCur_pos() {
         return cur_pos;
     }
-    private String intToHebLetters(int num){ //gimatrya
+    private String intToHebLetters(int num){
+        //gimatrya
         //get thousands
         if(num >=1000) return intToHebLetters(num % 1000) + "'" + intToHebLetters(num / 1000);
         //bellow 1000
@@ -173,7 +174,8 @@ public class BookGoal {
             }
         }
 
-        //TODO:: extract this string
+        //TODO:: extract this string?
+
        else return "ERROR";
 
         return "";
@@ -183,12 +185,15 @@ public class BookGoal {
             case AMOD:
                 //calc half of cur_pos as hebrew letters
                 String page = intToHebLetters(pos / 2);
-                if (pos % 2 == 1) page = page + " עמוד א";
-                if (pos % 2 == 0) page = page + " עמוד ב";
+//                if (pos % 2 == 1) page = page + " " + pos_type.toString() + " א";
+//                if (pos % 2 == 0) page = page + " " + pos_type.toString() + " ב";
+                  if (pos % 2 == 1) page = page + ". ";
+                  if (pos % 2 == 0) page = page + ": ";
                 return page;
-            case DAF: case PEREK: return intToHebLetters(pos);
+            case DAF: case PEREK: case MISHNA: case HALACHA: case PARASHA: return pos_type.toString() + " " + intToHebLetters(pos) ;
             case PAGE:  return ((Integer)pos).toString();
         }
+        //TODO extract this string?
         return "ERROR";
     }
     private String getProcessedCur_pos() {
@@ -196,10 +201,19 @@ public class BookGoal {
     }
     public String getProcessedPos(int Pos){
         String pos = this.processOnePos(Pos);
-        if(rate > 1) pos = this.processOnePos(Pos + this.rate - 1) + " - " + pos;
+        if(rate > 1) {
+            if(pos_type == PAGE)
+                pos = this.processOnePos(Pos + this.rate - 1) + " - " + pos;
+            else  //for hebrew counting do different
+                pos += " - " + this.processOnePos(Pos + this.rate - 1);
+        }
         return pos;
     }
-    //TODO::what if cur pos is advanced faster than rate???
+    /**
+     * get the planned cur_pos for date, regardless of current position
+     * @param date
+     * @return
+     */
     public int getCur_posForDate(Calendar date) {
 
         if(date.before(this.starting_date))
@@ -207,7 +221,9 @@ public class BookGoal {
         if(date.after(this.getEndingDate()))
             return -1;//error
 
-        int diffToDate  = (int) TimeUnit.DAYS.convert(date.getTime().getTime() - this.starting_date.getTime().getTime(),TimeUnit.MILLISECONDS);
+        int diffToDate  = (int) TimeUnit.DAYS.convert(date.getTime().getTime() -
+                this.starting_date.getTime().getTime(),TimeUnit.MILLISECONDS);
+
         return start_pos + rate*diffToDate;
     }
     /**
@@ -243,10 +259,15 @@ public class BookGoal {
     }
 
     public void setPos_type(String pos) {
-        if(pos.equals(AMOD .toString())) this.pos_type = AMOD;
-        if(pos.equals(DAF  .toString())) this.pos_type = DAF;
-        if(pos.equals(PEREK.toString())) this.pos_type = PEREK;
-        if(pos.equals(PAGE .toString())) this.pos_type = PAGE;
+
+        for(POS_TYPES type : POS_TYPES.values())
+        {
+            if(type.toString().equals(pos)) {
+                this.pos_type = type;
+                break;
+            }
+        }
+
     }
 
     public Calendar getStarting_date() {
@@ -254,8 +275,7 @@ public class BookGoal {
     }
     public String getShortStarting_date() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.DATE_FORMAT);
-        String str = dateFormat.format(this.getStarting_date().getTime());
-        return str;
+        return dateFormat.format(this.getStarting_date().getTime());
     }
     public void setStarting_date(Calendar starting_date) {
         this.starting_date = (Calendar) starting_date.clone();
@@ -323,6 +343,6 @@ public class BookGoal {
         return this.name + " " + getProcessedCur_pos() + ", " + at_time.toString();
     }
     public String getStringSummaryForDay(Calendar day) {
-        return this.name + " " + getProcessedPos(getCur_posForDate(day)) + ", " + at_time.toString();
+        return this.name + " " + getProcessedPos(getCur_posForDate(day)) + ", " + at_time.toString() + (note != "" ? ", " + note : "");
     }
 }

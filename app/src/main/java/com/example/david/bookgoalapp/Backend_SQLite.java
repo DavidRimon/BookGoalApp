@@ -192,8 +192,8 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
         stmt.bindLong(1,bookGoalId);
         stmt.bindLong(2,bookGoalId);
         if(stmt.executeUpdateDelete() == 0) //no rows affected
-            //TODO:: change string messgae...
-            return R.string.couldn_t_update_bookgoal_in_database;
+
+            return R.string.couldnt_update_cur_pos;
         return 0;
     }
 
@@ -211,8 +211,7 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
         stmt.bindLong(1,pos);
         stmt.bindLong(2,bookGoalId);
         if(stmt.executeUpdateDelete() == 0) //no rows affected
-            //TODO:: change string messgae...
-            return R.string.couldn_t_update_bookgoal_in_database;
+            return R.string.couldnt_update_cur_pos;
         return 0;
 
     }
@@ -241,8 +240,7 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
         stmt.bindLong(1,bookGoalId);
         stmt.bindLong(2,bookGoalId);
         if(stmt.executeUpdateDelete() == 0) //no rows affected
-            //TODO:: change string messgae...
-            return R.string.couldn_t_update_bookgoal_in_database;
+            return R.string.couldnt_update_cur_pos;
         return 0;
     }
 
@@ -261,8 +259,7 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
         stmt.bindLong(1,pos);
         stmt.bindLong(2,bookGoalId);
         if(stmt.executeUpdateDelete() == 0) //no rows affected
-            //TODO:: change string messgae...
-            return R.string.couldn_t_update_bookgoal_in_database;
+            return R.string.couldnt_update_cur_pos;
         return 0;
     }
 
@@ -277,7 +274,6 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
         SQLiteStatement stmt = db.compileStatement(sqlStmt);
         stmt.bindLong(1,id);
         if(stmt.executeUpdateDelete() == 0) //no rows affected
-            //TODO:: change string message?
             return R.string.couldn_t_update_bookgoal_in_database;
         return 0;
     }

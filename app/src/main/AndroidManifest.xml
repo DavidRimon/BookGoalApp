@@ -21,10 +21,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DayViewActivity"
-            android:label="@string/title_activity_day_view"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".BookGoalViewActivity"
             android:windowSoftInputMode="stateHidden" />
         <activity

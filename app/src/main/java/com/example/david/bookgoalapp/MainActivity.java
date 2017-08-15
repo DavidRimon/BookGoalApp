@@ -46,17 +46,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.concurrent.RunnableFuture;
 
-import static com.example.david.bookgoalapp.R.id.fab;
 import static com.example.david.bookgoalapp.R.id.weekday_gridview;
 
 public class MainActivity extends AppCompatActivity implements MainActivityBookGoalSummaryFragment.OnIsDoneChangedListener {
 
     //TODO: should make backendOnRam and that will work with the SQLBackend, so all activities canrefrens that ramDB instead of the DB been here in MainActivvity
     private IBackend database;
-    //TODO:: all of book goal data here is not really needed, because BookGoalActivityView loads it anywas from SQL db
+    //TODO:: all of book goal data here is not really needed, because BookGoalActivityView loads it anywas from SQL db?
     private ArrayList<BookGoal> bookGoals;
-
+    /**
+     * bacckground color object for caldroid day. made it here so no need to create it over and over again
+     */
+    private ColorDrawable cd;
     /**
      * Array list for a list of bookgoals idxs (in @this.bookGoals element) for each day in the month.
      * Index zero shouldn't be used! because this array is 1 indexed (like days in the month)
@@ -71,8 +74,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //TODO::: make custom text for caldroid. has todo with, caldroid grid adapter, look for cutome text on caldroid online.
-        //TODO:: make activity to show all book goals
-        //TODO:: make activity for predefined bookGoals
+
         //TODO:: make floating menu work with api 19
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -143,6 +145,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
      * set up the caldroid calander fragment
      */
     private void setUpCaldroid() {
+
+        cd = new ColorDrawable(getResources().getColor(R.color.caldroid_holo_blue_light));
+
         cl = new CaldroidFragment();
         Bundle args = new Bundle();
         Calendar cal = Calendar.getInstance();
@@ -151,52 +156,65 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         args.putBoolean(CaldroidFragment.ENABLE_SWIPE,true);
         args.putBoolean(CaldroidFragment.SQUARE_TEXT_VIEW_CELL,true);
         cl.setArguments(args);
-        //TODO: set on moth changed
-        //TODO: set on day selected, show list of bok goals for that day.
         //it will be a lisft of fragments, each one will get id, IsDone, and textToShow params.
         //when IsDone over there will be checked, it will singnal this activity to advance cur_pos in bookGoals list, and in the data base.
         cl.setCaldroidListener(new CaldroidListener() {
             @Override
-            public void onSelectDate(Date date, View view) {
-               //TODO:: show fragments list
-                //TODO:: set selected date with backround
+            public void onSelectDate(final Date date, View view) {
 
                 //clear prev date selection
-                ColorDrawable cd = new ColorDrawable(getResources().getColor(R.color.caldroid_holo_blue_dark));
-                if(curDate !=null)
-                    cl.clearBackgroundDrawableForDate(curDate.getTime());
+                //final ColorDrawable cd = new ColorDrawable(getResources().getColor(R.color.caldroid_holo_blue_light));
 
-                //set new day selection
-                cd.setColor(getResources().getColor(R.color.caldroid_holo_blue_light));
-                cl.setBackgroundDrawableForDate(cd,date);
-                if(curDate == null)
-                    curDate = Calendar.getInstance();
+                //TODO:: speed up the calender, maybe even change it
+                final Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        //clear prev date color
+                        if(curDate !=null)
+                            cl.clearBackgroundDrawableForDate(curDate.getTime());
+                        //set new day selection
+                        cl.setBackgroundDrawableForDate(cd,date);
 
-                curDate.setTime(date);
+
+                        if(curDate == null)
+                            curDate = Calendar.getInstance();
+
+                        curDate.setTime(date);
 
 
-                //Month is 0 indexed
-                if(curDate.get(Calendar.MONTH) + 1 > cl.getMonth()) { // if the day selected is in the next month
-                    cl.nextMonth();
-                    fillDaySummary(curDate);
-                }
-                else if(curDate.get(Calendar.MONTH) + 1 < cl.getMonth()) {// if the day selected is in the prev month
-                    cl.prevMonth();
-                    fillDaySummary(curDate);
-                }
-                else
-                    fillDaySummary(curDate);
-
-                cl.refreshView();
+                        //Month is 0 indexed
+                        if(curDate.get(Calendar.MONTH) + 1 > cl.getMonth()) { // if the day selected is in the next month
+                            cl.nextMonth();
+                            fillDaySummary(curDate);
+                        }
+                        else if(curDate.get(Calendar.MONTH) + 1 < cl.getMonth()) {// if the day selected is in the prev month
+                            cl.prevMonth();
+                            fillDaySummary(curDate);
+                        }
+                        else
+                            fillDaySummary(curDate);
+                        cl.refreshView();
+                    }
+                };
+                //change colors
+                cl.getView().post(r1);
             }
 
             @Override
-            public void onChangeMonth(int month, int year) {
-                //TODO:: recalc
-                //TODO:: explain why 1 helps here / fix it: because month hre given is the prev month, that we are moving FROM?
-                CalcBookGoalsIdxsForThisMonth(month-1,year);
-                //clear day summary view - if needed it will be filled up again.
+            public void onChangeMonth(final int month, final int year) {
+
+                final Runnable r = new Runnable() {
+                    @Override
+                    public void run() {
+                        //caldroid gives 1-indexed monthe number, and this function uses 0-indexed
+                        CalcBookGoalsIdxsForThisMonth(month-1,year);
+                    }
+                };
+                final Thread t = new Thread(r);
+                t.start();
                 fillDaySummary(null);
+                //clear day summary view - if needed it will be filled up again.
+
             }
         });
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
@@ -216,15 +234,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         //get today's bookGoals
         ArrayList<Integer> bookGoalsIdxs = bookGoalsIdxsForThisMonth.get(today.get(Calendar.DAY_OF_MONTH));
         for(int idx : bookGoalsIdxs) {
-            shortSummary += bookGoals.get(idx).getName() + " ,";
+            shortSummary += bookGoals.get(idx).getName() + ", ";
             longSummary  += bookGoals.get(idx).getStringSummaryForDay(today) +"\n";
         }
-        //TODO:: this shortSummary.toCharArray()[shortSummary.length() - 1 ] = '.';
+
+        char[] arr = shortSummary.toCharArray();
+        arr[arr.length - 2 ] = '.';
+        shortSummary =  String.valueOf(arr);
+
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_stat_name);
 
-//TODO:: make a string from resource
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                                                .setSmallIcon(R.drawable.ic_stat_name3)
+                                                .setSmallIcon(R.drawable.ic_calendar_book)
                                                 .setColor(getResources().getColor(R.color.caldroid_holo_blue_light))
                                                 .setContentTitle(getString(R.string.learn_today))
                                                 .setContentText(shortSummary)
@@ -289,9 +310,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
      */
     private void CalcBookGoalsIdxsForThisMonth(final int month,int year) {
         //TODO: also generate Drawables for Caldroid calander
-        //TODO: remember bookGolasIdxs is 1 indexed and not 0-indexed!!!
-        //TODO fix error that in next month isnot working very well, has something to do with Calander.Month is 0- indexed
-
+        // remember bookGolasIdxs is 1 indexed and not 0-indexed!!!
         Calendar monthStart = Calendar.getInstance(),
                  monthEnd   = Calendar.getInstance();
         monthStart.set(Calendar.DAY_OF_MONTH,1);
@@ -315,7 +334,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         for(int bookIdx = 0; bookIdx< bookGoals.size(); bookIdx++) {
             BookGoal b = bookGoals.get(bookIdx);
 
-            //TODO:: what about date times?? do they matter here???
             if(b.getStarting_date().before(monthStart)) {
                 if(b.getEndingDate().before(monthStart)){
                     //do nothing....
@@ -339,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
                     for(int day = b.getStarting_date().get(Calendar.DAY_OF_MONTH); day <= monthLength; day++)
                         bookGoalsIdxsForThisMonth.get(day).add(bookIdx);
                 } else if(b.getEndingDate().before(monthStart)) {
-                    //TODO: throw error or not???
+                    Toast.makeText(getApplicationContext(), R.string.ending_date_before_start,Toast.LENGTH_SHORT).show();
                 } else {//if end date is also in month - b.getEndingDate < monthEnd
                     //add days form start date to end date/יעש
                     for(int day = b.getStarting_date().get(Calendar.DAY_OF_MONTH); day <= b.getEndingDate().get(Calendar.DAY_OF_MONTH); day++)
@@ -354,7 +372,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
 
     /**
      * Function to be used by fragmnets, when done checkbox over there is checked
-     * TODO:: make revert for this
      * @param id
      */
     private void advanceCur_posForBookGoalId(int id) {
@@ -387,17 +404,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
     @Override
     public void onFragmentInteraction(CompoundButton checkBox, boolean isDone, int bookGoalId, int pos) {
 
-        //TODO:: what to do if error happens???
         if(isDone) {
             //advance bookGoalId cur pos
             int res = database.advanceBookGoalToCur_posById(pos,bookGoalId);
             if(res != 0) { //error occurred - revert
                 checkBox.setChecked(false);
-                //TODO: bigger mmessgae??
                 Toast.makeText(getApplicationContext(),getResources().getString(res),Toast.LENGTH_SHORT).show();
                 return;
             }
-            //TODO::should reload all instead??
             //find the book goal with the id and advance it
             for(BookGoal b: this.bookGoals) {
                 if(b.getId() == bookGoalId) {
@@ -412,7 +426,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
                 Toast.makeText(getApplicationContext(),getResources().getString(res),Toast.LENGTH_SHORT).show();
                 return;
             }
-            //TODO::should reload all instead??
             //find the book goal with the id and advance it
             for(BookGoal b: this.bookGoals) {
                 if(b.getId() == bookGoalId) {
@@ -424,8 +437,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
     }
 
     public void fillDaySummary(Calendar day) {
+
+        //TODO:: rearrange threads
         //first empty what is there already
-        ((LinearLayout) findViewById(R.id.lnlyDaySummary)).removeAllViews();
+        final LinearLayout mlnly = ((LinearLayout) findViewById(R.id.lnlyDaySummary));
+        mlnly.removeAllViews();
         if(day == null)return;
 
         //get all bookGoals from bookGoalsIdxsForThisMonth

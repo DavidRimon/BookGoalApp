@@ -27,7 +27,6 @@ import org.w3c.dom.Text;
  * create an instance of this fragment.
  */
 public class MainActivityBookGoalSummaryFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final String IsDone = "IsDone";
     public static final String BookGoalId = "BookGoalId";
@@ -35,8 +34,6 @@ public class MainActivityBookGoalSummaryFragment extends Fragment {
     public static final  String MyCurPos ="My current position";
     public static final String TextToShow = "TextToShow";
 
-
-    // TODO: Rename and change types of parameters
     private int bookGoalId;
     private int myCurPos;
     private int color;
@@ -52,10 +49,8 @@ public class MainActivityBookGoalSummaryFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *TODO:: add description
      * @return A new instance of fragment MainActivityBookGoalSummaryFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static MainActivityBookGoalSummaryFragment newInstance(int bookGoalId,int mCurPos,int color,String textToShow,boolean isDone) {
         MainActivityBookGoalSummaryFragment fragment = new MainActivityBookGoalSummaryFragment();
         Bundle args = new Bundle();

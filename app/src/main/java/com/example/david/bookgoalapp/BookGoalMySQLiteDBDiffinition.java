@@ -42,6 +42,7 @@ public  abstract class BookGoalMySQLiteDBDiffinition {
             private POS_TYPES(String text){
                 this.text = text;
             }
+            @Override
             public String toString() {
                 return text;
             }
@@ -56,14 +57,6 @@ public  abstract class BookGoalMySQLiteDBDiffinition {
                 R.color.holo_red_light,
                 R.color.holo_red_dark,
                 R.color.holo_purple};
-        public static POS_TYPES POS_TYPESvalueOf(String str) throws Exception {
-
-            for (POS_TYPES p:POS_TYPES.values())
-                if(p.toString() == str)
-                    return p;
-            //TODO:: extract this string
-            throw new Exception("Invalid value for pos types");
-        }
     }
     //command to create the SQL table
     public static final String CREATE_TABLE_BOOKGOAL_CMD =

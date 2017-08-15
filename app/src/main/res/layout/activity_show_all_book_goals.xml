@@ -2,7 +2,6 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordShowAllMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -17,7 +16,6 @@
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -37,16 +35,6 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_show_all_book_goals" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end"
-        app:rippleColor="@color/holo_gray_bright"
-        app:srcCompat="@drawable/fab_add" />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,7 +50,7 @@
             android:padding="3dp"
             android:text="@string/enabled2"
 
-            app:buttonTint="@android:color/holo_orange_light" />
+            android:buttonTint="@android:color/holo_orange_light" />
 
         <CheckBox
             android:id="@+id/cbDisableds"
@@ -72,7 +60,7 @@
             android:checked="true"
             android:padding="3dp"
             android:text="@string/disabled"
-            app:buttonTint="@android:color/holo_orange_light" />
+            android:buttonTint="@android:color/holo_orange_light" />
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

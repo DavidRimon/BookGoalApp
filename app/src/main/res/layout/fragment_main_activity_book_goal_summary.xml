@@ -18,6 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:clickable="true"
+        android:layout_gravity="center"
         app:backgroundTint="@color/caldroid_holo_blue_light"
         app:fabSize="mini"
         app:rippleColor="@android:color/holo_green_light"
@@ -28,7 +29,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/white"/>
+        android:background="@color/white"
+        android:layout_margin="2dp"/>
 
     <TextView
         android:id="@+id/txtvSummary"

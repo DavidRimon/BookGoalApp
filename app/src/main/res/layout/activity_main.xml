@@ -2,7 +2,6 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@android:style/Theme.NoTitleBar"
@@ -60,9 +59,7 @@
 
 
     </com.example.david.bookgoalapp.MyFloatingActionMenu>
-    <include
-        android:id="@+id/include"
-        layout="@layout/content_main" />
+    <include layout="@layout/content_main" />
 
 
 </android.support.design.widget.CoordinatorLayout>

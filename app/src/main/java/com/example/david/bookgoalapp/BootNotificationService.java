@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 /**
@@ -29,16 +30,16 @@ public class BootNotificationService extends Service {
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this,0,
                 resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
-        //TODO:: fix this service!!!!
-        Notification notification = new Notification.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_name3)
+        //fix this service? if will show the today to learn will require to launch the app
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_calendar_book)
                 .setContentTitle(getResources().getString(R.string.learn_today))
                 .setContentText(getString(R.string.did_you_learn_today))
+                .setColor(getResources().getColor(R.color.caldroid_holo_blue_light))
                 .setContentIntent(resultPendingIntent)
                 .build();
         mNM.notify(NOtIFICATION,notification);
 
-        Toast.makeText(this.getApplicationContext(),"startupt thingy",Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -48,9 +49,11 @@ public class BootNotificationService extends Service {
     @Override
     public void onDestroy() {
 
-        // TODO:: decide if this is needed. without it, there is a stronger reminder
-        // mNM.cancel(NOtIFICATION);
-        Toast.makeText(this.getApplicationContext(),"destroy thingy",Toast.LENGTH_LONG).show();
+        // decide if this is needed. without it, there is a stronger reminder
+        //it is needed cus otherwise the service notify will replace the app notify
+        //after the app was launched
+        mNM.cancel(NOtIFICATION);
+       // Toast.makeText(this.getApplicationContext(),"destroy thingy",Toast.LENGTH_LONG).show();
     }
     @Nullable
     @Override

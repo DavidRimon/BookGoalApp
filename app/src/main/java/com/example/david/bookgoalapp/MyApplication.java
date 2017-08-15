@@ -24,7 +24,6 @@ public class MyApplication extends Application
     @Override
     public void onCreate()
     {
-        //TODO:: why caldroid doesn't chnage it's language??
         updateLanguage(this);
         super.onCreate();
     }

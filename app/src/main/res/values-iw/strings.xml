@@ -11,7 +11,6 @@
     <string name="couldn_t_parse_time_got_from_data_base">לא יכול להמיר זמן מהמאגר</string>
     <string name="couldn_t_update_bookgoal_in_database">לא יכול לעדכן לימוד במאגר</string>
     <string name="couldnt_load_data">לא יכול לטעון נתונים:</string>
-    <string name="error">בעיה</string>
     <string name="error_while_adding">בעיה בהוספה:</string>
     <string name="error_while_loading">בעיה בטעינה:</string>
     <string name="error_while_updating">בעיה בעדכון:</string>
@@ -38,4 +37,10 @@
     <string name="show_all">הראה הכל</string>
     <string name="add">הוסף</string>
     <string name="did_you_learn_today">כבר למדת היום? גע כדי לראות!</string>
+    <string name="action_settings">הגדרות</string>
+    <string name="hello_blank_fragment">ריק</string>
+    <string name="title_activity_day_view">היום</string>
+    <string name="title_activity_show_all_book_goals">כותרת</string>
+    <string name="couldnt_update_cur_pos">לא יכול לעדכן מיקום</string>
+    <string name="ending_date_before_start">תאריך סוף לפני התחלה</string>
 </resources>
