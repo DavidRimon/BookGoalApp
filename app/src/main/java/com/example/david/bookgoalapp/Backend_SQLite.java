@@ -456,7 +456,7 @@ public class Backend_SQLite extends SQLiteOpenHelper implements IBackend {
                 b = getBookGoalFromCursor(c);
             } catch (Exception e) {
                 int code = Integer.valueOf(e.getMessage());//if conversion doesn't work it must be
-                //anouther exception we don't know about, throw it again111
+                //another exception we don't know about, throw it again111
                 return new Pair<>(code,null); //if it work, then its probably one of our exeptions
             }
             goals.add(b);

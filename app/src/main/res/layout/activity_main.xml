@@ -32,32 +32,34 @@
         app:elevation="5dp"
         app:srcCompat="@drawable/ic_add_book" /-->
 
-    <com.github.clans.fab.FloatingActionMenu
+    <com.example.david.bookgoalapp.MyFloatingActionMenu
         android:id="@+id/fabmMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:elevation="5dp"
         app:menu_fab_size="mini"
+        app:menu_labels_position="right"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp">
 
         <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabShowAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_label="@string/show_all"
+            android:src="@android:drawable/ic_menu_view"
+            />
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fabAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add_book_white"
-            app:fab_label="Add" />
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fabShowAll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_label="Show all"
-            android:src="@android:drawable/ic_menu_view"
-            />
+            app:fab_label="@string/add" />
 
-    </com.github.clans.fab.FloatingActionMenu>
+
+    </com.example.david.bookgoalapp.MyFloatingActionMenu>
     <include
         android:id="@+id/include"
         layout="@layout/content_main" />

@@ -61,6 +61,7 @@ public  abstract class BookGoalMySQLiteDBDiffinition {
             for (POS_TYPES p:POS_TYPES.values())
                 if(p.toString() == str)
                     return p;
+            //TODO:: extract this string
             throw new Exception("Invalid value for pos types");
         }
     }

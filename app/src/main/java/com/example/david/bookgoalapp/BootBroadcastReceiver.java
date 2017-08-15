@@ -20,7 +20,6 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
         // just make sure we are getting the right intent (better safe than sorry)
 
             ComponentName componentName = new ComponentName(context.getPackageName(),BootNotificationService.class.getName());
-            Toast.makeText(context,"startup text",Toast.LENGTH_LONG).show();
             ComponentName service = context.startService(new Intent().setComponent(componentName));
             if( null ==  service) {
                 //something really wrong here

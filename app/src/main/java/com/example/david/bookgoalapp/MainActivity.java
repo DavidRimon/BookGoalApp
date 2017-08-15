@@ -2,16 +2,20 @@ package com.example.david.bookgoalapp;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -40,6 +44,7 @@ import com.thebluealliance.spectrum.SpectrumDialog;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Vector;
 
 import static com.example.david.bookgoalapp.R.id.fab;
@@ -62,25 +67,60 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
      * currently selected date
      */
     private Calendar curDate = null;
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //TODO::: make custom text for caldroid. has todo with, caldroid grid adapter, look for cutome text on caldroid online.
         //TODO:: make activity to show all book goals
         //TODO:: make activity for predefined bookGoals
+        //TODO:: make floating menu work with api 19
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
+
+        updateLanguage();
+
+        loadData();
+
+        setUpFloatingMenu();
+
+        setUpCaldroid();
+
+        setUpNotification();
+
+    }
+
+    private void updateLanguage() {
+        Locale locale = new Locale(MyApplication.mlang);
+        Locale.setDefault(locale);
+        Configuration configuration = getResources().getConfiguration();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+            configuration.setLocale(locale);
+        else configuration.locale = locale;
+
+        getBaseContext().getResources().updateConfiguration(configuration,
+                                        getBaseContext().getResources().getDisplayMetrics());
+    }
+
+    private void loadData() {
         database = Backend_SQLite.getInstance(this.getApplicationContext());
         try {
             Pair<Integer, ArrayList<BookGoal>> p = database.getAllEnabledBookGoals();
             if(p.first != 0) {
-                Toast.makeText(getApplicationContext(),"Couldn't load data: " + getResources().getString(p.first),Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),getString(R.string.couldnt_load_data) + getResources().getString(p.first),Toast.LENGTH_LONG).show();
             }
             else this.bookGoals = p.second;
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void setUpFloatingMenu() {
+
+        MyFloatingActionMenu fabm = (MyFloatingActionMenu) findViewById(R.id.fabmMenu);
+
         com.github.clans.fab.FloatingActionButton fab = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabAdd);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
                 startActivity(intent);
             }
         });
-                                                  fab = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabShowAll);
+        fab = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabShowAll);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,11 +137,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
                 startActivity(intent);
             }
         });
-
-        setUpCaldroid();
-
-        setUpNotification();
-
     }
 
     /**
@@ -191,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                                                 .setSmallIcon(R.drawable.ic_stat_name3)
                                                 .setColor(getResources().getColor(R.color.caldroid_holo_blue_light))
-                                                .setContentTitle("Learn today")
+                                                .setContentTitle(getString(R.string.learn_today))
                                                 .setContentText(shortSummary)
                                                 .setStyle(new NotificationCompat.BigTextStyle().bigText(longSummary))
                                                 .setContentIntent(resultPendingIntent);
@@ -206,9 +241,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
     public void reloadData() {
         try {
             Pair<Integer, ArrayList<BookGoal>> p = database.getAllEnabledBookGoals();
-            if(p.first != 0) {
-                Toast.makeText(getApplicationContext(),"Couldn't load data: " + getResources().getString(p.first),Toast.LENGTH_LONG).show();
-            }
+            if(p.first != 0)
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.couldnt_load_data) + getResources().getString(p.first), Toast.LENGTH_LONG).show();
             else this.bookGoals = p.second;
         } catch (Exception e) {
             e.printStackTrace();

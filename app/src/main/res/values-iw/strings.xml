@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BookGoalApp</string>
+    <string name="book_edited_sucesfuly">הלימוד נשמר בהצלחה</string>
+    <string name="bookgoal_added_successfully">הלימוד נוסף בהצלחה</string>
+    <string name="bookgoal_deleted_successfully">הלימוד נמחק בהצלחה</string>
+    <string name="choose_color">בחר צבע</string>
+    <string name="couldn_t_add_bookgoal_to_database">לא יכול להוסיף לימוד למאגר</string>
+    <string name="couldn_t_delete_row_from_database">לא יכול למחוק לימו מהמאגר</string>
+    <string name="couldn_t_find_bookgoal_in_database">לא יכול למצוא הלימוד במאגר</string>
+    <string name="couldn_t_parse_time_got_from_data_base">לא יכול להמיר זמן מהמאגר</string>
+    <string name="couldn_t_update_bookgoal_in_database">לא יכול לעדכן לימוד במאגר</string>
+    <string name="couldnt_load_data">לא יכול לטעון נתונים:</string>
+    <string name="error">בעיה</string>
+    <string name="error_while_adding">בעיה בהוספה:</string>
+    <string name="error_while_loading">בעיה בטעינה:</string>
+    <string name="error_while_updating">בעיה בעדכון:</string>
+    <string name="invalid_pos_fields">מיקום התחלתי לא חוקי</string>
+    <string name="invalid_pos_type">סוג מיקום לא חוקי</string>
+    <string name="invalid_time">זמן לא חוקי</string>
+    <string name="learn_today">למד היום</string>
+    <string name="some_date_flds_still_empty">חלק מהתאריכים עדיין רקים</string>
+    <string name="color">צבע:</string>
+    <string name="current_position">מיקום נוכחי:</string>
+    <string name="disabled">מבוטלים</string>
+    <string name="enabled">מאופשר:</string>
+    <string name="enabled2">מאופשרים</string>
+    <string name="ending_position">מיקום סופי:</string>
+    <string name="every_day_at">כל יום ב:</string>
+    <string name="invalid_date">תאריך לא חוקי</string>
+    <string name="name">שם:</string>
+    <string name="note">הערות:</string>
+    <string name="poistion_type">סוג מיקום:</string>
+    <string name="rate">קצב:</string>
+    <string name="stating_date">תאריך התחלה:</string>
+    <string name="statring_position">מיקום התחלתי:</string>
+    <string name="all_bookgoals">כל הלימודים</string>
+    <string name="show_all">הראה הכל</string>
+    <string name="add">הוסף</string>
+    <string name="did_you_learn_today">כבר למדת היום? גע כדי לראות!</string>
+</resources>

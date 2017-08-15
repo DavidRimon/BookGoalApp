@@ -18,6 +18,7 @@ import android.widget.Toast;
 public class BootNotificationService extends Service {
 
     private NotificationManager  mNM;
+    private final int NOtIFICATION = 1;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -28,13 +29,14 @@ public class BootNotificationService extends Service {
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this,0,
                 resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
+        //TODO:: fix this service!!!!
         Notification notification = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_name3)
-                .setContentTitle("test1")
-                .setContentText("this is startup noti")
+                .setContentTitle(getResources().getString(R.string.learn_today))
+                .setContentText(getString(R.string.did_you_learn_today))
                 .setContentIntent(resultPendingIntent)
                 .build();
-        mNM.notify(001,notification);
+        mNM.notify(NOtIFICATION,notification);
 
         Toast.makeText(this.getApplicationContext(),"startupt thingy",Toast.LENGTH_LONG).show();
     }
@@ -42,6 +44,13 @@ public class BootNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
+    }
+    @Override
+    public void onDestroy() {
+
+        // TODO:: decide if this is needed. without it, there is a stronger reminder
+        // mNM.cancel(NOtIFICATION);
+        Toast.makeText(this.getApplicationContext(),"destroy thingy",Toast.LENGTH_LONG).show();
     }
     @Nullable
     @Override

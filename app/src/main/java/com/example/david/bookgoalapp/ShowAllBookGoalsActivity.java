@@ -76,7 +76,7 @@ public class ShowAllBookGoalsActivity extends AppCompatActivity implements MainA
 
         if(p.first !=0 ) { //error
             emptyLayout();
-            Toast.makeText(this,"Error while loading: " + getResources().getString(p.first),Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,getResources().getString(R.string.error_while_loading) + getResources().getString(p.first),Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -118,6 +118,6 @@ public class ShowAllBookGoalsActivity extends AppCompatActivity implements MainA
             Toast.makeText(this,res,Toast.LENGTH_SHORT).show();
         }
         //TODO:: update in view ?
-        Toast.makeText(this,"blaaaaaaaaa",Toast.LENGTH_SHORT).show();
+
     }
 }

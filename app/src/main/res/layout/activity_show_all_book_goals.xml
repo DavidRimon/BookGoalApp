@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:title="All book goals"
+            app:title="@string/all_bookgoals"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <android.support.v7.widget.Toolbar
@@ -60,7 +60,7 @@
             android:background="@color/holo_green_light"
             android:checked="true"
             android:padding="3dp"
-            android:text="Enabled"
+            android:text="@string/enabled2"
 
             app:buttonTint="@android:color/holo_orange_light" />
 
@@ -71,7 +71,7 @@
             android:background="@color/holo_red_light"
             android:checked="true"
             android:padding="3dp"
-            android:text="Disabled"
+            android:text="@string/disabled"
             app:buttonTint="@android:color/holo_orange_light" />
     </LinearLayout>
 

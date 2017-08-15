@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
@@ -33,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+
 import com.example.david.bookgoalapp.BookGoalMySQLiteDBDiffinition.BookGoalTableDiffinition.POS_TYPES;
 import com.thebluealliance.spectrum.SpectrumDialog;
 import com.thebluealliance.spectrum.SpectrumPalette;
@@ -65,7 +68,7 @@ public class BookGoalViewActivity extends AppCompatActivity {
             Pair<Integer,BookGoal> p = database.getBookGoalById(id);
             if(p.first != 0) { //error
                 //TODO: string...
-                Toast.makeText(getApplicationContext(),"Error while loading: " + getResources().getString(p.first),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),getString(R.string.error_while_loading) + getResources().getString(p.first),Toast.LENGTH_SHORT).show();
                 //exit
                 goBack(null);
                 return;
@@ -85,7 +88,6 @@ public class BookGoalViewActivity extends AppCompatActivity {
         }
 
     }
-
     // ----------------- my functions
     private void enableEdit() {
 
@@ -181,21 +183,21 @@ public class BookGoalViewActivity extends AppCompatActivity {
         b.setEnd_pos(Integer.valueOf(((EditText)  findViewById(R.id.etxtEndPos)).getText().toString()));
         b.setCur_pos(Integer.valueOf(((EditText)  findViewById(R.id.etxtCurPos)).getText().toString()));
         if(b.getEnd_pos() < b.getStart_pos() || b.getCur_pos() < b.getStart_pos() || b.getCur_pos() > b.getEnd_pos()) { //error
-            Toast.makeText(getApplicationContext(), "invalid position fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.invalid_pos_fields, Toast.LENGTH_SHORT).show();
             return null;
         }
         try {
             b.setPos_type(((Spinner)            findViewById(R.id.spnrPos_Types)).getSelectedItem().toString());
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"invalid position type. " + e.getMessage(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),getString(R.string.invalid_pos_type) + e.getMessage(),Toast.LENGTH_SHORT).show();
             return null;
         }
         try {
             b.setStating_date(((EditText)           findViewById(R.id.etxtStartDate)).getText().toString());
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"invalid date. " + e.getMessage(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),getString(R.string.invalid_date) + e.getMessage(),Toast.LENGTH_SHORT).show();
             return null;
         }
        // ((EditText)           findViewById(R.id.etxtColor))
@@ -203,7 +205,7 @@ public class BookGoalViewActivity extends AppCompatActivity {
             b.setAt_time(new Time(((EditText)  findViewById(R.id.etxtEveryDayAt)).getText().toString()));
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"invalid At time. " + e.getMessage(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),getString(R.string.invalid_time) + e.getMessage(),Toast.LENGTH_SHORT).show();
             return null;
         }
 
@@ -270,7 +272,7 @@ public class BookGoalViewActivity extends AppCompatActivity {
     public void chooseColor(View view) {
 
         SpectrumDialog.Builder bu = new SpectrumDialog.Builder(this);
-        bu.setTitle("Choose color");
+        bu.setTitle(R.string.choose_color);
         bu.setColors(R.array.myColors);
         ColorDrawable cd = (ColorDrawable) findViewById(R.id.txtvColorSelected).getBackground();
         int color = cd.getColor();
@@ -291,7 +293,7 @@ public class BookGoalViewActivity extends AppCompatActivity {
     public void SaveBookGoal(View view) {
 
         if(!isFullWithData()) {
-            Toast.makeText(this,"Some date fields are still empty",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.some_date_flds_still_empty,Toast.LENGTH_SHORT).show();
             return;
         }
         disableEdit();
@@ -302,18 +304,18 @@ public class BookGoalViewActivity extends AppCompatActivity {
             int res = database.editBookGoal(getBookGoalFromView());
 
             if (0 == res) { //edit successful
-                Toast.makeText(this, "BookGoal edited successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.book_edited_sucesfuly, Toast.LENGTH_SHORT).show();
                 //change name heading
                 String newName = ((EditText) findViewById(R.id.etxtName)).getText().toString();
                 ((TextView) findViewById(R.id.txtvwName)).setText(newName);
             } else //error
-                Toast.makeText(this, "Error while updating: " + getString(res), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.error_while_updating) + getString(res), Toast.LENGTH_SHORT).show();
 
         } else { //if this is adding command
             //TODO: book goal id --- whats going on witht that? need to get it from view or avoid it???
             int res = database.addBookGoal(getBookGoalFromView());
             if (0 == res) { //adding successful
-                Toast.makeText(getApplicationContext(), "BookGoal added successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.bookgoal_added_successfully, Toast.LENGTH_SHORT).show();
                 //change name heading
                 String newName = ((EditText) findViewById(R.id.etxtName)).getText().toString();
                 ((TextView) findViewById(R.id.txtvwName)).setText(newName);
@@ -322,7 +324,7 @@ public class BookGoalViewActivity extends AppCompatActivity {
                 //TODO:: if won't use go back, so need to pull it back from the data base to get the id. otherwise on deletion there will be an error because bookGoalId wan't load
                 goBack(null);
             } else //error
-                Toast.makeText(this, "Error while adding: " + getString(res), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.error_while_adding) + getString(res), Toast.LENGTH_SHORT).show();
         }
     }
     public void deleteBookGoal(View view) {
@@ -330,7 +332,7 @@ public class BookGoalViewActivity extends AppCompatActivity {
 
         int res = database.deleteBookGoal(this.bookGoalId);
         if(0 == res) { //delete successful
-            Toast.makeText(getApplicationContext(),"BookGoal deleted successfully",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.bookgoal_deleted_successfully,Toast.LENGTH_SHORT).show();
             goBack(null);
         }
     }
