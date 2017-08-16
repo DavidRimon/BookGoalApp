@@ -17,7 +17,7 @@
     <string name="invalid_date">invalid date.</string>
     <string name="invalid_time">invalid At time.</string>
     <string name="choose_color">Choose color</string>
-    <string name="some_date_flds_still_empty">Some date fields are still empty</string>
+    <string name="some_data_flds_still_empty">Some data fields are still empty</string>
     <string name="book_edited_sucesfuly">BookGoal edited successfully</string>
     <string name="error_while_updating">Error while updating:</string>
     <string name="bookgoal_added_successfully">BookGoal added successfully</string>

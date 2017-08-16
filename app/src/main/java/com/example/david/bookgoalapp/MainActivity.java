@@ -238,10 +238,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityBookG
             longSummary  += bookGoals.get(idx).getStringSummaryForDay(today) +"\n";
         }
 
-        char[] arr = shortSummary.toCharArray();
-        arr[arr.length - 2 ] = '.';
-        shortSummary =  String.valueOf(arr);
-
+        if(shortSummary.length()  > 2) {
+            char[] arr = shortSummary.toCharArray();
+            arr[arr.length - 2] = '.';
+            shortSummary = String.valueOf(arr);
+        }
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_stat_name);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)

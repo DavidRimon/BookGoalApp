@@ -154,6 +154,11 @@ public class BookGoalViewActivity extends AppCompatActivity {
         ((EditText)           findViewById(R.id.etxtmNote))    .setText(b.getNote());
 
     }
+
+    /**
+     * get a BookGoal object from text boxes. If data is invalid, will retun null.
+     * @return
+     */
     private BookGoal getBookGoalFromView(){
 
         BookGoal b = new BookGoal();
@@ -278,42 +283,49 @@ public class BookGoalViewActivity extends AppCompatActivity {
         enableEdit();
     }
     public void SaveBookGoal(View view) {
+        try {
+            BookGoal b;
+            if (!isFullWithData()) {
+                Toast.makeText(this, R.string.some_data_flds_still_empty, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            b = getBookGoalFromView();
+            if(b == null)  return;
 
-        if(!isFullWithData()) {
-            Toast.makeText(this, R.string.some_date_flds_still_empty,Toast.LENGTH_SHORT).show();
-            return;
-        }
-        disableEdit();
+            disableEdit();
 
-        if(addingBookGoalFlag == false) {
-            //check that there is data to collect
+            if (addingBookGoalFlag == false) {
+                //check that there is data to collect
+                int res = database.editBookGoal(b);
 
-            int res = database.editBookGoal(getBookGoalFromView());
+                if (0 == res) { //edit successful
+                    Toast.makeText(this, R.string.book_edited_sucesfuly, Toast.LENGTH_SHORT).show();
+                    //change name heading
+                    String newName = ((EditText) findViewById(R.id.etxtName)).getText().toString();
+                    ((TextView) findViewById(R.id.txtvwName)).setText(newName);
+                } else //error
+                    Toast.makeText(this, getString(R.string.error_while_updating) + getString(res), Toast.LENGTH_SHORT).show();
 
-            if (0 == res) { //edit successful
-                Toast.makeText(this, R.string.book_edited_sucesfuly, Toast.LENGTH_SHORT).show();
-                //change name heading
-                String newName = ((EditText) findViewById(R.id.etxtName)).getText().toString();
-                ((TextView) findViewById(R.id.txtvwName)).setText(newName);
-            } else //error
-                Toast.makeText(this, getString(R.string.error_while_updating) + getString(res), Toast.LENGTH_SHORT).show();
+            } else { //if this is adding command
+                int res = database.addBookGoal(b);
+                if (0 == res) { //adding successful
+                    Toast.makeText(getApplicationContext(), R.string.bookgoal_added_successfully, Toast.LENGTH_SHORT).show();
+                    //change name heading
+                    String newName = ((EditText) findViewById(R.id.etxtName)).getText().toString();
+                    ((TextView) findViewById(R.id.txtvwName)).setText(newName);
+                    addingBookGoalFlag = false; //its not adding anymore - from here on its editing
+                    //get out form activity
 
-        } else { //if this is adding command
-            int res = database.addBookGoal(getBookGoalFromView());
-            if (0 == res) { //adding successful
-                Toast.makeText(getApplicationContext(), R.string.bookgoal_added_successfully, Toast.LENGTH_SHORT).show();
-                //change name heading
-                String newName = ((EditText) findViewById(R.id.etxtName)).getText().toString();
-                ((TextView) findViewById(R.id.txtvwName)).setText(newName);
-                addingBookGoalFlag = false; //its not adding anymore - from here on its editing
-                //get out form activity
-
-                //if won't use go back, so need to pull it back from the data base to
-                // get the id. otherwise on deletion there will be an error because
-                // bookGoalId wan't load
-                goBack(null);
-            } else //error
-                Toast.makeText(this, getString(R.string.error_while_adding) + getString(res), Toast.LENGTH_SHORT).show();
+                    //if won't use go back, so need to pull it back from the data base to
+                    // get the id. otherwise on deletion there will be an error because
+                    // bookGoalId wan't load
+                    goBack(null);
+                } else //error
+                    Toast.makeText(this, getString(R.string.error_while_adding) + getString(res), Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
     public void deleteBookGoal(View view) {

@@ -14,11 +14,10 @@
     <string name="error_while_adding">בעיה בהוספה:</string>
     <string name="error_while_loading">בעיה בטעינה:</string>
     <string name="error_while_updating">בעיה בעדכון:</string>
-    <string name="invalid_pos_fields">מיקום התחלתי לא חוקי</string>
+    <string name="invalid_pos_fields">מיקומים לא חוקיים</string>
     <string name="invalid_pos_type">סוג מיקום לא חוקי</string>
     <string name="invalid_time">זמן לא חוקי</string>
     <string name="learn_today">למד היום</string>
-    <string name="some_date_flds_still_empty">חלק מהתאריכים עדיין רקים</string>
     <string name="color">צבע:</string>
     <string name="current_position">מיקום נוכחי:</string>
     <string name="disabled">מבוטלים</string>
@@ -43,4 +42,5 @@
     <string name="title_activity_show_all_book_goals">כותרת</string>
     <string name="couldnt_update_cur_pos">לא יכול לעדכן מיקום</string>
     <string name="ending_date_before_start">תאריך סוף לפני התחלה</string>
+    <string name="some_data_flds_still_empty">חלק מהשדות רקים</string>
 </resources>
